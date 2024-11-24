@@ -19,15 +19,15 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="声明 学习路线跟随Java Guide，其中包含了一些额外内容。 Java基础概念与常识 面向对象 何为面向对象？ 个人猜想： 面向对象的概念是将现实世界中的事物基于它们的特征，属性，逻辑与功能包装成一个对象，并且探索对象与对象之间的关系和影响。将这些对象映射到计算机中并且用计算机进行解释，既是面向对象。 客观解释： 面向对象是一种软件开发方法，一种编程范式百度百科。 引用  百度百科：面向对象">
+    <meta name="description" content="声明 学习路线跟随Java Guide，其中包含了一些额外内容。 Java基础概念与常识 面向对象 何为面向对象？ 面向对象是一种软件开发方法，一种编程范式[1]。面向对象编程时一种以“对象”为核心的编程范式，而Java是一门典型的面向对象编程语言。通过类和对象的概念，将现实世界的实体机器行为映射到程序中。   类 (Class)： 类是对象的模板或蓝图，定义了对象的属性和方法。   对象 (Ob">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java学习 1">
 <meta property="og:url" content="http://example.com/2024/11/24/Java%E5%AD%A6%E4%B9%A0%201/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="声明 学习路线跟随Java Guide，其中包含了一些额外内容。 Java基础概念与常识 面向对象 何为面向对象？ 个人猜想： 面向对象的概念是将现实世界中的事物基于它们的特征，属性，逻辑与功能包装成一个对象，并且探索对象与对象之间的关系和影响。将这些对象映射到计算机中并且用计算机进行解释，既是面向对象。 客观解释： 面向对象是一种软件开发方法，一种编程范式百度百科。 引用  百度百科：面向对象">
+<meta property="og:description" content="声明 学习路线跟随Java Guide，其中包含了一些额外内容。 Java基础概念与常识 面向对象 何为面向对象？ 面向对象是一种软件开发方法，一种编程范式[1]。面向对象编程时一种以“对象”为核心的编程范式，而Java是一门典型的面向对象编程语言。通过类和对象的概念，将现实世界的实体机器行为映射到程序中。   类 (Class)： 类是对象的模板或蓝图，定义了对象的属性和方法。   对象 (Ob">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-11-24T09:45:00.000Z">
-<meta property="article:modified_time" content="2024-11-24T10:36:48.002Z">
+<meta property="article:modified_time" content="2024-11-24T11:47:25.641Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java 面向对象">
 <meta name="twitter:card" content="summary_large_image">
@@ -236,7 +236,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          162 字
+          1.1k 字
         
       </span>
     
@@ -247,7 +247,7 @@
         
         
         
-          2 分钟
+          9 分钟
         
       </span>
     
@@ -303,12 +303,101 @@
 <h2 id="Java基础概念与常识">Java基础概念与常识</h2>
 <h2 id="面向对象">面向对象</h2>
 <h3 id="何为面向对象？"><strong>何为面向对象？</strong></h3>
-<p><strong>个人猜想：</strong> 面向对象的概念是将现实世界中的事物基于它们的特征，属性，逻辑与功能包装成一个对象，并且探索对象与对象之间的关系和影响。将这些对象映射到计算机中并且用计算机进行解释，既是面向对象。</p>
-<p><strong>客观解释：</strong> 面向对象是一种软件开发方法，一种编程范式<a href="#baike-oosd">百度百科</a>。</p>
-<h1>引用</h1>
-<p><a id="baike-oosd"></a></p>
-<p><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089">百度百科：面向对象</a></p>
-
+<p>面向对象是一种软件开发方法，一种编程范式<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[百度百科：面向对象](https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089)">[1]</span></a></sup>。面向对象编程时一种以“<strong>对象</strong>”为核心的编程范式，而Java是一门典型的面向对象编程语言。通过<strong>类和对象</strong>的概念，将现实世界的实体机器行为映射到程序中。</p>
+<ul>
+<li>
+<p><strong>类 (Class)：</strong> 类是对象的模板或蓝图，定义了对象的属性和方法。</p>
+</li>
+<li>
+<p><strong>对象 (Object)：</strong> 对象是类的实例，具体表现为程序中具有独立状态和行为的实体。</p>
+</li>
+<li>
+<p><strong>方法 (Method)：</strong> 定义对象的行为（功能）。</p>
+</li>
+<li>
+<p><strong>属性 (Attribute)：</strong> 描述对象的特征（数据）。<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[2]</span></a></sup></p>
+</li>
+</ul>
+<p>这样解释程序结构与事物之间的联系是十分符合人的逻辑的，因此人们可以通过这个形式，给予程序结构各种不一样的设计。</p>
+<h3 id="面向对象的三大核心特征：封装，继承，多态"><strong>面向对象的三大核心特征：封装，继承，多态</strong></h3>
+<h4 id="封装："><strong>封装：</strong></h4>
+<p>将数据与方法集合（封装）到一起，使其形成一个独立的实体。数据在实体的内部，可以隐藏内部细节，只对外部开放一些接口来与外部产生联系。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li><strong>减少耦合</strong>：确保了实体为独立的，因此一个实体的修改并不会对其他实体本身造成影响。</li>
+<li><strong>方便性能检测：</strong> 因为试图独立且扮演着各自的角色与行为，因此在检测影响性能的因素时能够更加清晰地确定哪里出了问题。</li>
+<li><strong>降低构建大型系统的风险：</strong> 系统的崩溃也许并不是因为这个独立的实体造成的。</li>
+<li><strong>提高安全性：</strong> 有效隐藏了实体的内部信息，降低受到更改和攻击的风险。</li>
+<li>符合直觉</li>
+</ul>
+<h4 id="继承："><strong>继承：</strong></h4>
+<p>实现了<strong>A is a B</strong>这样的关系。指的是<strong>一个类（子类）可以从另一个类（父类）中获取属性和方法</strong>，从而实现代码复用和扩展。</p>
+<ol>
+<li><strong>父类（超类 / 基类）：</strong> 提供属性和方法的类。</li>
+<li><strong>子类（派生类）：</strong> 继承父类的类，可以直接使用父类的属性和方法，也可以添加自己的功能。</li>
+</ol>
+<p>比如 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>h</mi><mi>a</mi><mi>p</mi><mi>e</mi><mo>→</mo><mi>R</mi><mi>e</mi><mi>c</mi><mi>t</mi><mi>a</mi><mi>n</mi><mi>g</mi><mi>l</mi><mi>e</mi><mo>→</mo><mi>S</mi><mi>q</mi><mi>u</mi><mi>a</mi><mi>r</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">Shape \rightarrow Rectangle \rightarrow Square</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">ha</span><span class="mord mathnormal">p</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">t</span><span class="mord mathnormal">an</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">Sq</span><span class="mord mathnormal">u</span><span class="mord mathnormal">a</span><span class="mord mathnormal">re</span></span></span></span>， $ Animal \rightarrow Rabbit$， <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>e</mi><mi>h</mi><mi>i</mi><mi>c</mi><mi>l</mi><mi>e</mi><mo>→</mo><mi>T</mi><mi>r</mi><mi>a</mi><mi>i</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">Vehicle \rightarrow Train</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal">e</span><span class="mord mathnormal">hi</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">ain</span></span></span></span>​等等。</p>
+<p>继承应该遵循里氏替换原则，子类对象必须能够替换掉所有父类对象。<sup id="fnref:3" class="footnote-ref"><a href="#fn:3" rel="footnote"><span class="hint--top hint--rounded" aria-label="[[Java 全栈知识体系: 面向对象](https://pdai.tech/md/java/basic/java-basic-oop.html)]">[3]</span></a></sup></p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>
+<p><strong>代码复用：</strong> 子类可以直接复用父类的代码，无需重复编写。</p>
+</li>
+<li>
+<p><strong>易于扩展：</strong> 新的功能可以通过扩展现有类实现。</p>
+</li>
+<li>
+<p><strong>逻辑清晰：</strong> 类的层次关系体现了现实世界中“是某种类型”的逻辑。</p>
+</li>
+</ul>
+<p><strong>局限性：</strong></p>
+<ul>
+<li>
+<p><strong>单继承限制：</strong> Java 不支持类的多继承（但可以通过接口实现类似功能）。</p>
+</li>
+<li>
+<p><strong>过度继承问题：</strong> 如果层次过深，子类和父类之间的关系复杂，会导致代码维护困难。</p>
+</li>
+<li>
+<p><strong>强耦合：</strong> 子类与父类高度耦合，父类的修改可能影响所有子类。</p>
+</li>
+</ul>
+<h4 id="多态："><strong>多态：</strong></h4>
+<p><strong>指同一个方法或操作在不同对象中表现出不同的行为</strong><sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[2]</span></a></sup>。多态主要有两种形式：</p>
+<ol>
+<li>
+<p><strong>编译时多态（静态多态）：</strong> 方法重载（Method Overloading），在同一个类中定义多个拥有相同名称但参数类型或数量不同的方法。</p>
+<ul>
+<li>在<strong>编译器</strong>便决定</li>
+<li><strong>不涉及继承或类层次结构</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>运行时多态（动态多态）：</strong> 方法重写（Method Overriding），在不同类中，<strong>根据实际引用的对象类型调用方法（父类引用指向子类对象）</strong>。</p>
+<ul>
+<li>在<strong>运行期</strong>确定</li>
+<li><strong>需要继承或实现接口</strong></li>
+<li>父类引用可以指向子类对象</li>
+</ul>
+</li>
+</ol>
+<p><strong>优点：</strong></p>
+<ul>
+<li>
+<p><strong>提高代码复用性：</strong> 子类可以直接使用父类的方法或重写其行为，减少代码重复。</p>
+</li>
+<li>
+<p><strong>增强代码灵活性：</strong> 父类引用可以指向不同的子类对象，能够适应需求的变化。</p>
+</li>
+<li>
+<p><strong>支持接口和抽象类的实现：</strong> 多态性使得面向接口编程更加简单。</p>
+</li>
+</ul>
+<h1>参考资料</h1>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089">百度百科：面向对象</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span>来自于GPT老师
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span>[<a target="_blank" rel="noopener" href="https://pdai.tech/md/java/basic/java-basic-oop.html">Java 全栈知识体系: 面向对象</a>]
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
