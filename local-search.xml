@@ -8,7 +8,7 @@
     <link href="/2024/11/24/Java%E5%AD%A6%E4%B9%A0%201/"/>
     <url>/2024/11/24/Java%E5%AD%A6%E4%B9%A0%201/</url>
     
-    <content type="html"><![CDATA[<h1>声明</h1><p>学习路线跟随Java Guide，其中包含了一些额外内容。</p><h2 id="Java基础概念与常识">Java基础概念与常识</h2><h2 id="面向对象">面向对象</h2><h3 id="何为面向对象？"><strong>何为面向对象？</strong></h3><p><strong>个人猜想：</strong> 面向对象的概念是将现实世界中的事物基于它们的特征，属性，逻辑与功能包装成一个对象，并且探索对象与对象之间的关系和影响。将这些对象映射到计算机中并且用计算机进行解释，既是面向对象。</p><p><strong>客观解释：</strong> 面向对象是一种软件开发方法，一种编程范式[百度百科](baike oosd)。</p><h1>引用</h1><div id="baike oosd">     <a href=“https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089" target="_blank" rel="noopener noreferrer"> 百度百科：面向对象</div>]]></content>
+    <content type="html"><![CDATA[<h1>声明</h1><p>学习路线跟随Java Guide，其中包含了一些额外内容。</p><h2 id="Java基础概念与常识">Java基础概念与常识</h2><h2 id="面向对象">面向对象</h2><h3 id="何为面向对象？"><strong>何为面向对象？</strong></h3><p><strong>个人猜想：</strong> 面向对象的概念是将现实世界中的事物基于它们的特征，属性，逻辑与功能包装成一个对象，并且探索对象与对象之间的关系和影响。将这些对象映射到计算机中并且用计算机进行解释，既是面向对象。</p><p><strong>客观解释：</strong> 面向对象是一种软件开发方法，一种编程范式<a href="#baike-oosd">百度百科</a>。</p><h1>引用</h1><p><a id="baike-oosd"></a></p><p><a href="https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089">百度百科：面向对象</a></p>]]></content>
     
     
     <categories>
