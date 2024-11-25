@@ -27,9 +27,10 @@
 <meta property="og:description" content="声明 学习路线跟随Java Guide，其中包含了一些额外内容。 Java基础概念与常识 面向对象 何为面向对象？ 面向对象是一种软件开发方法，一种编程范式[1]。面向对象编程时一种以“对象”为核心的编程范式，而Java是一门典型的面向对象编程语言。通过类和对象的概念，将现实世界的实体机器行为映射到程序中。   类 (Class)： 类是对象的模板或蓝图，定义了对象的属性和方法。   对象 (Ob">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-11-24T09:45:00.000Z">
-<meta property="article:modified_time" content="2024-11-24T11:49:48.321Z">
+<meta property="article:modified_time" content="2024-11-25T07:50:12.736Z">
 <meta property="article:author" content="Clain Chen">
-<meta property="article:tag" content="Java 面向对象">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="面向对象">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -238,7 +239,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          2.2k 字
         
       </span>
     
@@ -249,7 +250,7 @@
         
         
         
-          9 分钟
+          19 分钟
         
       </span>
     
@@ -395,11 +396,66 @@
 <p><strong>支持接口和抽象类的实现：</strong> 多态性使得面向接口编程更加简单。</p>
 </li>
 </ul>
+<h2 id="Java-SE-vs-Java-EE-JVM-vs-JDK-vs-JRE">Java SE vs Java EE &amp; JVM vs JDK vs JRE</h2>
+<h3 id="Java-SE-vs-Java-EE">Java SE vs Java EE</h3>
+<p>简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等。Java EE适合用于企业级分布式应用，适用于具有多层架构系统和高并发，高可用性需求的大型应用程序。</p>
+<p>由此，显然可以看出，Java EE对比Java SE是一个复杂得多的Java开发框架，因此，Java SE的应用场景和部署，配置难度对比起Java EE都简单许多。</p>
+<h3 id="JVM-vs-JDK-vs-JRE">JVM vs JDK vs JRE</h3>
+<p>从包含的角度来看，可以看成</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mi>V</mi><mi>M</mi><mo>⊂</mo><mi>J</mi><mi>R</mi><mi>E</mi><mo>⊂</mo><mi>J</mi><mi>D</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">JVM \subset JRE \sub JDK
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.05764em;">RE</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">DK</span></span></span></span></span></p>
+<p>JVM (Java Virtual Machine)， 顾名思义，就是Java虚拟机。JVM是实现让Java程序真正做到&quot;Write Once, Run Everywhere&quot;的功臣，其可以针对不同系统，使用相同的字节码和不同的实现方法，以得到相同的结果。</p>
+<p>JRE (Java RunTime Environment)， 顾名思义，也就是Java运行环境。其中显然包含了虚拟机，也包含了一系列基本的内置类库，用与基本运行Java程序所需的环境和类库。</p>
+<p>JDK (Java Development Kit)，顾名思义，也就是Java开发工具包，其中包含了JRE和JVM，并能够创建和编译Java程序(javac)。JDK拥有更多额外的工具，比如javadoc（文档生成器）、jdb（调试器）、jconsole（监控工具）、javap（反编译工具）等<sup id="fnref:4" class="footnote-ref"><a href="#fn:4" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide: 基础常见面试题总结（上）](https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre)">[4]</span></a></sup>。</p>
+<h2 id="优化一下Java运行速度吧！">优化一下Java运行速度吧！</h2>
+<p>Java程序的运行逻辑基本上可以理解为：</p>
+<pre><code class=" mermaid">graph LR
+
+c1[编写.java文件] --javac编译--&gt; c2[生成.class 字节码文件]
+c2 --JVM解释器&amp;JIT--&gt; c3[机器码]
+c3 --&gt; 运行程序
+</code></pre>
+<p>在将.class文件转化为机器码的过程中，JVM类加载器首先会加载.class文件,然后通过解释器逐行解释执行。可以看出，这样子会比较慢。由于有些代码块会经常被调用，因此，不难想到可以将这些经常被用到的代码块的机器码保存下来，以节省大量的时间，这看起来就像是一种缓存的机制。</p>
+<p>综上，Java引进了名为**JIT (Just In Time Compilation)**的编译器，使其在程序运行时进行动态的编译。其核心逻辑是，对于热点代码块，JIT会在完成第一次编译后将对应的机器码保存下来，以供下次直接使用。这时候我想到了一个问题：对于一个庞大的系统来说，JIT所带来的缓存量也会很大，也许会对内存带来很大的压力。我们应该如何处理这个问题？</p>
+<h3 id="JVM如何管理JIT缓存的内存-sup-id-fnref-2-class-footnote-ref-a-href-fn-2-rel-footnote-span-class-hint-top-hint-rounded-aria-label-来自于GPT老师-2-span-a-sup">JVM如何管理JIT缓存的内存<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[2]</span></a></sup></h3>
+<p>JVM 使用以下机制来管理 JIT 编译生成的本地代码及其缓存：</p>
+<ol>
+<li><strong>代码缓存区（Code Cache）：</strong>
+<ul>
+<li>JVM 在内存中分配一个固定大小的区域，用于存储 JIT 编译后的本地机器码。</li>
+<li>代码缓存有容量限制，当缓存满时，JVM 会自动清理较老或较少使用的编译代码，以腾出空间给新的热点代码。</li>
+</ul>
+</li>
+<li><strong>分层编译（Tiered Compilation）：</strong>
+<ul>
+<li>JVM 会分阶段优化代码，减少不必要的内存占用。
+<ul>
+<li>初始阶段：使用 C1 编译器快速生成基本的本地代码，占用内存少但优化程度较低。</li>
+<li>热点阶段：使用 C2 编译器对高频代码进行深度优化，占用更多内存，但执行效率更高。</li>
+</ul>
+</li>
+<li>如果代码热点不再频繁使用，JVM 可能会将其标记为可清理对象。</li>
+</ul>
+</li>
+<li><strong>垃圾回收（GC）与代码缓存清理：</strong>
+<ul>
+<li>JVM 的垃圾回收机制不仅负责清理堆内存，还可以清理代码缓存中的无用代码。</li>
+<li>无效或不再使用的 JIT 编译代码会被标记并清理，以释放内存。</li>
+</ul>
+</li>
+</ol>
+<p>对于代码缓存，JVM提供了一些参数用来调整缓存区域的大小，或者是将代码块识别为热点代码所需的阈值:</p>
+<ul>
+<li><code>-XX:InitialCodeCacheSize</code>: 代码缓存的初始大小</li>
+<li><code>-XX:ReservedCodeCacheSize</code>: 代码缓存的最大大小</li>
+<li><code>-XX:CompileThreshold</code>: 将代码识别为热点代码所需的调用次数阈值</li>
+</ul>
 <h1>参考资料</h1>
 <section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/2262089">百度百科：面向对象</a>
 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span>来自于GPT老师
 <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span>[<a target="_blank" rel="noopener" href="https://pdai.tech/md/java/basic/java-basic-oop.html">Java 全栈知识体系: 面向对象</a>]
-<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre">Java Guide: 基础常见面试题总结（上）</a>
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
@@ -432,7 +488,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Java-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" class="print-no-link">#Java 面向对象</a>
+        <a href="/tags/Java/" class="print-no-link">#Java</a>
+      
+        <a href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" class="print-no-link">#面向对象</a>
       
     </div>
   
@@ -499,37 +557,6 @@
             </div>
 
             
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","appKey":"v4VvZEUKcd2wDBNYO4A3ntni","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
-
-
-    </article>
-  
-
-
           </article>
         </div>
       </div>
@@ -582,6 +609,21 @@
   
 
 
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 
