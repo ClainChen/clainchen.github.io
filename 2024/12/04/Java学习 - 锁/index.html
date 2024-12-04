@@ -19,25 +19,23 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+    <meta name="description" content="synchronized(同步) Java的synchronized关键字可以用来修饰：  实例方法 静态方法 代码块  注意：synchronized无法用来修饰抽象方法。synchronized关键字是用于控制方法执行的同步，是在方法体内部实现线程同步的机制。抽象方法没有方法体，无法实现同步代码块和同步方法所需的逻辑。 早期的synchronized是一个重量级锁。在早期的 Java 版本中，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java学习 - JVM, JDK, JRE">
-<meta property="og:url" content="http://example.com/2024/11/24/Java%E5%AD%A6%E4%B9%A0%20-%20JVM,%20JDK,%20JRE/index.html">
+<meta property="og:title" content="Java学习 - 锁">
+<meta property="og:url" content="http://example.com/2024/12/04/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%94%81/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+<meta property="og:description" content="synchronized(同步) Java的synchronized关键字可以用来修饰：  实例方法 静态方法 代码块  注意：synchronized无法用来修饰抽象方法。synchronized关键字是用于控制方法执行的同步，是在方法体内部实现线程同步的机制。抽象方法没有方法体，无法实现同步代码块和同步方法所需的逻辑。 早期的synchronized是一个重量级锁。在早期的 Java 版本中，">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-24T12:45:00.000Z">
-<meta property="article:modified_time" content="2024-12-04T11:48:20.036Z">
+<meta property="article:published_time" content="2024-12-04T08:46:05.000Z">
+<meta property="article:modified_time" content="2024-12-04T17:36:15.456Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java">
-<meta property="article:tag" content="JVM">
-<meta property="article:tag" content="JDK">
-<meta property="article:tag" content="JRE">
+<meta property="article:tag" content="锁机制">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java学习 - JVM, JDK, JRE - Clain的小屋</title>
+  <title>Java学习 - 锁 - Clain的小屋</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -48,8 +46,6 @@
   <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
 
 
 
@@ -218,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java学习 - JVM, JDK, JRE"></span>
+            <span id="subtitle" data-typed-text="Java学习 - 锁"></span>
           
         </div>
 
@@ -229,8 +225,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-24 20:45" pubdate>
-          2024年11月24日 晚上
+        <time datetime="2024-12-04 16:46" pubdate>
+          2024年12月4日 下午
         </time>
       </span>
     
@@ -241,7 +237,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.2k 字
         
       </span>
     
@@ -252,7 +248,7 @@
         
         
         
-          12 分钟
+          10 分钟
         
       </span>
     
@@ -298,72 +294,52 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java学习 - JVM, JDK, JRE</h1>
+            <h1 id="seo-header">Java学习 - 锁</h1>
             
             
               <div class="markdown-body">
                 
-                <h1>Java SE vs Java EE</h1>
-<p>简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等。Java EE适合用于企业级分布式应用，适用于具有多层架构系统和高并发，高可用性需求的大型应用程序。</p>
-<p>由此，显然可以看出，Java EE对比Java SE是一个复杂得多的Java开发框架，因此，Java SE的应用场景和部署，配置难度对比起Java EE都简单许多。</p>
-<h1>JVM vs JDK vs JRE</h1>
-<p>从包含的角度来看，可以看成</p>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mi>V</mi><mi>M</mi><mo>⊂</mo><mi>J</mi><mi>R</mi><mi>E</mi><mo>⊂</mo><mi>J</mi><mi>D</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">JVM \subset JRE \sub JDK
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.05764em;">RE</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">DK</span></span></span></span></span></p>
-<p><strong>JVM (Java Virtual Machine)</strong>， 顾名思义，就是Java虚拟机。JVM是实现让Java程序真正做到&quot;Write Once, Run Everywhere&quot;的功臣，其可以针对不同系统，使用相同的字节码和不同的实现方法，以得到相同的结果。</p>
-<p><strong>JRE (Java RunTime Environment)</strong>， 顾名思义，也就是Java运行环境。其中显然包含了虚拟机，也包含了一系列基本的内置类库，用与基本运行Java程序所需的环境和类库。</p>
-<p><strong>JDK (Java Development Kit)</strong>，顾名思义，也就是Java开发工具包，其中包含了JRE和JVM，并能够创建和编译Java程序(javac)。JDK拥有更多额外的工具，比如javadoc（文档生成器）、jdb（调试器）、jconsole（监控工具）、javap（反编译工具）等<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide: 基础常见面试题总结（上）](https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre)">[2]</span></a></sup>。</p>
-<h1>优化一下Java运行速度吧！</h1>
-<p>Java程序的运行逻辑基本上可以理解为：</p>
-<pre><code class=" mermaid">graph LR
-
-c1[编写.java文件] --javac编译--&gt; c2[生成.class 字节码文件]
-c2 --JVM解释器&amp;JIT--&gt; c3[机器码]
-c3 --&gt; 运行程序
-</code></pre>
-<p>在将.class文件转化为机器码的过程中，JVM类加载器首先会加载.class文件,然后通过解释器逐行解释执行。可以看出，这样子会比较慢。由于有些代码块会经常被调用，因此，不难想到可以将这些经常被用到的代码块的机器码保存下来，以节省大量的时间，这看起来就像是一种缓存的机制。</p>
-<p>综上，Java引进了名为**JIT (Just In Time Compilation)**的编译器，使其在程序运行时进行动态的编译。其核心逻辑是，对于热点代码块，JIT会在完成第一次编译后将对应的机器码保存下来，以供下次直接使用。这时候我想到了一个问题：<strong>对于一个庞大的系统来说，JIT所带来的缓存量也会很大，也许会对内存带来很大的压力。我们应该如何处理这个问题？</strong></p>
-<h2 id="JVM如何管理JIT缓存的内存-sup-id-fnref-1-class-footnote-ref-a-href-fn-1-rel-footnote-span-class-hint-top-hint-rounded-aria-label-来自于GPT老师-1-span-a-sup">JVM如何管理JIT缓存的内存<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[1]</span></a></sup></h2>
-<p>JVM 使用以下机制来管理 JIT 编译生成的本地代码及其缓存：</p>
-<ol>
-<li><strong>代码缓存区（Code Cache）：</strong>
+                <h1>synchronized(同步)</h1>
+<p>Java的<code>synchronized</code>关键字可以用来修饰：</p>
 <ul>
-<li>JVM 在内存中分配一个固定大小的区域，用于存储 JIT 编译后的本地机器码。</li>
-<li>代码缓存有容量限制，当缓存满时，JVM 会自动清理较老或较少使用的编译代码，以腾出空间给新的热点代码。</li>
+<li>实例方法</li>
+<li>静态方法</li>
+<li>代码块</li>
+</ul>
+<p><strong>注意：</strong><code>synchronized</code>无法用来修饰抽象方法。<code>synchronized</code>关键字是用于控制方法执行的同步，是在方法体内部实现线程同步的机制。抽象方法没有方法体，无法实现同步代码块和同步方法所需的逻辑。</p>
+<p>早期的<code>synchronized</code>是一个<strong>重量级锁</strong>。在早期的 Java 版本中，<code>synchronized</code>关键字在底层实现上比较依赖操作系统提供的互斥锁（如通过<code>monitorenter</code>和<code>monitorexit</code>指令与对象头中的锁标志位配合）。<strong>当一个线程获取锁时，它需要向操作系统请求互斥锁资源。这种方式涉及到用户态和内核态的切换，这是一个相对复杂且耗时的过程。</strong></p>
+<p>在Java 6之后对<code>synchronized</code>进行了大量优化：</p>
+<ul>
+<li>偏向锁（Biased Locking）
+<ul>
+<li><strong>原理</strong>：偏向锁的核心思想是如果一段同步代码一直被一个线程访问，那么这个线程会自动获取锁，并且在之后的执行过程中，这个锁会偏向这个线程，不需要每次都进行锁的获取和释放操作。例如，在一个单线程频繁访问同步代码块的场景下，偏向锁可以大大减少获取锁的开销。当一个线程第一次访问带有<code>synchronized</code>的代码块时，JVM 会在对象头中记录这个线程的 ID，表示这个锁偏向该线程。后续这个线程再次访问时，只要检查对象头中的线程 ID 与自己一致，就可以直接进入同步代码块。</li>
+<li><strong>性能提升</strong>：通过减少不必要的锁获取和释放操作，偏向锁能够显著提高程序在单线程访问同步代码块场景下的性能。在很多实际应用中，有相当一部分同步代码块在一段时间内是被单线程访问的，偏向锁正好可以利用这一特性。</li>
 </ul>
 </li>
-<li><strong>分层编译（Tiered Compilation）：</strong>
+<li>轻量级锁（Lightweight Locking）
 <ul>
-<li>JVM 会分阶段优化代码，减少不必要的内存占用。
-<ul>
-<li>初始阶段：使用 C1 编译器快速生成基本的本地代码，占用内存少但优化程度较低。</li>
-<li>热点阶段：使用 C2 编译器对高频代码进行深度优化，占用更多内存，但执行效率更高。</li>
+<li><strong>原理</strong>：当出现多个线程竞争偏向锁时，偏向锁会升级为轻量级锁。轻量级锁是基于 CAS（Compare - And - Swap）操作实现的。CAS 操作是一种无锁的原子操作，它通过比较内存中的值和期望的值，如果相同则进行更新。在轻量级锁的场景下，线程会通过 CAS 操作尝试获取锁，如果获取成功，就可以进入同步代码块。如果 CAS 操作失败，说明有其他线程正在占用锁，此时线程不会立即阻塞，而是会自旋（不断尝试获取锁）一段时间。</li>
+<li><strong>性能提升</strong>：相比于传统的重量级锁，轻量级锁避免了线程在竞争锁时立即进入阻塞状态。自旋操作在竞争不激烈的情况下，可以让线程在较短的时间内获取到锁，减少了线程上下文切换的次数，从而提高了性能。</li>
 </ul>
 </li>
-<li>如果代码热点不再频繁使用，JVM 可能会将其标记为可清理对象。</li>
+<li>锁粗化（Lock Coarsening）
+<ul>
+<li><strong>原理</strong>：JVM 会自动检测到一连串连续的、对同一个对象加锁和解锁的操作，并将这些操作合并为一次范围更大的加锁和解锁操作。例如，在一个循环体内频繁地对同一个对象进行<code>synchronized</code>操作，JVM 可能会将这些多次的小范围锁操作合并为一个在整个循环体外的大范围锁操作。这样可以减少获取和释放锁的次数，降低开销。</li>
 </ul>
 </li>
-<li><strong>垃圾回收（GC）与代码缓存清理：</strong>
+<li>锁消除（Lock Elimination）
 <ul>
-<li>JVM 的垃圾回收机制不仅负责清理堆内存，还可以清理代码缓存中的无用代码。</li>
-<li>无效或不再使用的 JIT 编译代码会被标记并清理，以释放内存。</li>
+<li><strong>原理</strong>：JVM 在编译阶段会通过逃逸分析来判断一个对象是否被多个线程访问。如果一个对象只在一个线程内被访问，即使代码中有<code>synchronized</code>操作，JVM 也会认为这个锁是不必要的，并将其消除。例如，在一个方法内部定义的局部对象，并且这个对象没有被方法返回或者传递给其他线程，那么对这个对象的<code>synchronized</code>操作就会被 JVM 消除。</li>
+<li><strong>性能提升</strong>：通过避免不必要的锁操作，锁消除能够提高代码的性能，特别是在有大量局部对象使用<code>synchronized</code>操作的场景下。</li>
 </ul>
 </li>
-</ol>
-<p>对于代码缓存，JVM提供了一些参数用来调整缓存区域的大小，或者是将代码块识别为热点代码所需的阈值:</p>
-<ul>
-<li><code>-XX:InitialCodeCacheSize</code>: 代码缓存的初始大小</li>
-<li><code>-XX:ReservedCodeCacheSize</code>: 代码缓存的最大大小</li>
-<li><code>-XX:CompileThreshold</code>: 将代码识别为热点代码所需的调用次数阈值</li>
 </ul>
-<h2 id="Java包装类的缓存">Java包装类的缓存</h2>
-<p><strong>包装类</strong>是对Java中基本类型的封装。一般来说，包装类的创建<code>.valueOf(...)</code>会占用内存，而对于一些常用的、小范围的数值（例如 0 到 127 的 <code>Integer</code>），频繁创建和销毁对象会导致较大的内存浪费。因此，在JDK5中引入了一个缓存机制，其会在类初始化时，提前创建好会被频繁使用的包装类对象。这种机制常见于 <code>Integer</code>、<code>Byte</code>、<code>Short</code>、<code>Long</code> 和 <code>Character</code> 等包装类，目的是为了优化内存的使用并提高性能。</p>
-<p><strong>注意：在构造函数中，不会使用缓存机制，比如：</strong><code>Integer a = new Integer(100);</code></p>
-<p><strong>自动装箱的过程会使用缓存，因为其底层代码是调用了封装类的</strong><code>valueOf()</code><strong>这个方法</strong>。</p>
-<h1>参考资料</h1>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>来自于GPT老师
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre">Java Guide: 基础常见面试题总结（上）</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<div class="note note-info">
+            <p>从<a target="_blank" rel="noopener" href="https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97">Java Guide</a>中看到了这段内容：关于偏向锁多补充一点：由于偏向锁增加了 JVM 的复杂性，同时也并没有为所有应用都带来性能提升。因此，在 JDK15 中，偏向锁被默认关闭（仍然可以使用 <code>-XX:+UseBiasedLocking</code> 启用偏向锁），在 JDK18 中，偏向锁已经被彻底废弃（无法通过命令行打开）。<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide](https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97)">[1]</span></a></sup></p>
+          </div>
+<h1>引用</h1>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97">Java Guide</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
@@ -398,11 +374,7 @@ c3 --&gt; 运行程序
       
         <a href="/tags/Java/" class="print-no-link">#Java</a>
       
-        <a href="/tags/JVM/" class="print-no-link">#JVM</a>
-      
-        <a href="/tags/JDK/" class="print-no-link">#JDK</a>
-      
-        <a href="/tags/JRE/" class="print-no-link">#JRE</a>
+        <a href="/tags/%E9%94%81%E6%9C%BA%E5%88%B6/" class="print-no-link">#锁机制</a>
       
     </div>
   
@@ -414,8 +386,8 @@ c3 --&gt; 运行程序
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java学习 - JVM, JDK, JRE</div>
-      <div>http://example.com/2024/11/24/Java学习 - JVM, JDK, JRE/</div>
+      <div>Java学习 - 锁</div>
+      <div>http://example.com/2024/12/04/Java学习 - 锁/</div>
     </div>
     <div class="license-meta">
       
@@ -427,7 +399,7 @@ c3 --&gt; 运行程序
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月24日</div>
+          <div>2024年12月4日</div>
         </div>
       
       
@@ -459,15 +431,15 @@ c3 --&gt; 运行程序
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java学习 - 面向对象</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2024/12/04/Java%E5%AD%A6%E4%B9%A0%20-%20%E8%BF%9B%E7%A8%8B%EF%BC%8C%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%8D%8F%E7%A8%8B/" title="Java学习 - 进程，线程，协程">
+                        <span class="hidden-mobile">Java学习 - 进程，线程，协程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
@@ -522,26 +494,6 @@ c3 --&gt; 运行程序
 
   
 
-
-  
-  
-
-
-
-
-  <script>
-  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
-    mermaid.initialize({"theme":"default"});
-
-    Fluid.utils.listenDOMLoaded(function() {
-      Fluid.events.registerRefreshCallback(function() {
-        if ('mermaid' in window) {
-          mermaid.init();
-        }
-      });
-    });
-  });
-</script>
 
 
 
