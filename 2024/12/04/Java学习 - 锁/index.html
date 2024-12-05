@@ -19,15 +19,15 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="synchronized(同步) Java的synchronized关键字可以用来修饰：  实例方法 静态方法 代码块  注意：synchronized无法用来修饰抽象方法。synchronized关键字是用于控制方法执行的同步，是在方法体内部实现线程同步的机制。抽象方法没有方法体，无法实现同步代码块和同步方法所需的逻辑。 早期的synchronized是一个重量级锁。在早期的 Java 版本中，">
+    <meta name="description" content="乐观锁与悲观锁 悲观锁 悲观锁，即以最差的情况假设每一次并发操作。简单来说，就是悲观地认为每一次并发操作都有可能受到其他线程的影响，导致数据不一致或错误。因此，悲观锁旨在一次只让一个线程进行操作，在操作完毕后再讲数据传递给下一个线程。 我们常见的synchronized关键字和ReentrantLock类就是悲观锁的一种表示形式，其能够保证代码块或者方法一次只会让一个线程执行，其余线程则需要等待锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java学习 - 锁">
 <meta property="og:url" content="http://example.com/2024/12/04/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%94%81/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="synchronized(同步) Java的synchronized关键字可以用来修饰：  实例方法 静态方法 代码块  注意：synchronized无法用来修饰抽象方法。synchronized关键字是用于控制方法执行的同步，是在方法体内部实现线程同步的机制。抽象方法没有方法体，无法实现同步代码块和同步方法所需的逻辑。 早期的synchronized是一个重量级锁。在早期的 Java 版本中，">
+<meta property="og:description" content="乐观锁与悲观锁 悲观锁 悲观锁，即以最差的情况假设每一次并发操作。简单来说，就是悲观地认为每一次并发操作都有可能受到其他线程的影响，导致数据不一致或错误。因此，悲观锁旨在一次只让一个线程进行操作，在操作完毕后再讲数据传递给下一个线程。 我们常见的synchronized关键字和ReentrantLock类就是悲观锁的一种表示形式，其能够保证代码块或者方法一次只会让一个线程执行，其余线程则需要等待锁">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-12-04T08:46:05.000Z">
-<meta property="article:modified_time" content="2024-12-04T17:36:15.456Z">
+<meta property="article:modified_time" content="2024-12-05T09:02:57.112Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="锁机制">
@@ -237,7 +237,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          3.7k 字
         
       </span>
     
@@ -248,7 +248,7 @@
         
         
         
-          10 分钟
+          31 分钟
         
       </span>
     
@@ -299,7 +299,50 @@
             
               <div class="markdown-body">
                 
-                <h1>synchronized(同步)</h1>
+                <h1>乐观锁与悲观锁</h1>
+<h2 id="悲观锁">悲观锁</h2>
+<p>悲观锁，即以最差的情况假设每一次并发操作。简单来说，就是悲观地认为每一次并发操作都有可能受到其他线程的影响，导致数据不一致或错误。因此，悲观锁旨在一次只让一个线程进行操作，在操作完毕后再讲数据传递给下一个线程。</p>
+<p>我们常见的<code>synchronized</code>关键字和<code>ReentrantLock</code>类就是悲观锁的一种表示形式，其能够保证代码块或者方法一次只会让一个线程执行，其余线程则需要等待锁释放。</p>
+<h3 id="优势">优势</h3>
+<ul>
+<li>资源的一致性高</li>
+<li>操作简单</li>
+</ul>
+<h3 id="劣势">劣势</h3>
+<ul>
+<li>性能开销大</li>
+<li>死锁问题</li>
+<li>资源浪费问题</li>
+</ul>
+<h2 id="乐观锁">乐观锁</h2>
+<p>乐观锁，即认为每一次并发操作都不会出现冲突，或者概率很低。这种锁旨在让线程操作时不去上锁，而是在操作结束时对比预期值和真实值来决定操作是否成功。</p>
+<p>我们常说的 <strong>CAS(Compare-And-Swap)</strong> 技术便是乐观锁的核心算法。<code>Atomic</code>类都是乐观锁的一种实现，其使用对数据的原子操作来确保共享资源的更新是原子的。</p>
+<h3 id="优势-2">优势</h3>
+<ul>
+<li>适合高并发高吞吐场景</li>
+<li>无锁</li>
+<li>没有死锁问题</li>
+</ul>
+<h3 id="劣势-2">劣势</h3>
+<ul>
+<li>操作复杂</li>
+<li>无法保证资源一致性</li>
+<li><strong>死循环风险：</strong> 乐观锁更新失败通常都会出现自旋，自旋操作也许会因为一直不正确或者错误操作导致永远无法结束</li>
+</ul>
+<h2 id="乐观锁的一个简单的实现方式">乐观锁的一个简单的实现方式</h2>
+<p>乐观锁的一个非常简单的实现方式是为数据添加一个版本号<code>version</code></p>
+<p>假如有两个线程A和B，且他们正尝试对一个共享资源进行读和写。</p>
+<ul>
+<li>A读取资源值为1，获取预期<code>expectVersionA = 1</code></li>
+<li>B读取资源值为1，获取预期<code>expectVersionB = 1</code></li>
+<li>B尝试为资源值加1，对比<code>currentVersion = 1 == expectVersionB</code></li>
+<li>B成功操作，将<code>version++</code></li>
+<li>A尝试为资源值加1，对比<code>curentVersion = 2 != expectVersionA</code></li>
+<li>由于当前<code>version</code>与预期<code>version</code>不相等，故A操作失败，执行自旋操作（重新再操作一遍）</li>
+</ul>
+<p>可以看到，整个操作过程中没有用到锁（或者说用了自旋锁），期间也发生了冲突的问题，但是最终却依然能够保证共享资源的一致性。</p>
+<p>但是现实场景中肯定不止这么简单，在有大量线程并发时，这种操作也可能会变得效率低下（大量自旋操作发生）。</p>
+<h1>synchronized(同步)</h1>
 <p>Java的<code>synchronized</code>关键字可以用来修饰：</p>
 <ul>
 <li>实例方法</li>
@@ -337,6 +380,60 @@
 <div class="note note-info">
             <p>从<a target="_blank" rel="noopener" href="https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97">Java Guide</a>中看到了这段内容：关于偏向锁多补充一点：由于偏向锁增加了 JVM 的复杂性，同时也并没有为所有应用都带来性能提升。因此，在 JDK15 中，偏向锁被默认关闭（仍然可以使用 <code>-XX:+UseBiasedLocking</code> 启用偏向锁），在 JDK18 中，偏向锁已经被彻底废弃（无法通过命令行打开）。<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide](https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97)">[1]</span></a></sup></p>
           </div>
+<h1>ReentrantLock</h1>
+<p><code>ReentrantLock</code>，顾名思义，是一个可重入的互斥锁。所谓可重入，就是指同一个线程在获取了锁之后，可以再次获取该锁而不会被阻塞，这在递归调用或嵌套同步块的场景中非常有用。例如，一个线程在进入一个同步方法后，又在该方法内部调用了另一个同样被该锁保护的同步方法，如果是不可重入锁，此时线程将会被阻塞，导致死锁的发生；而<code>ReentrantLock</code>则允许这种情况，提高了代码的灵活性和安全性。</p>
+<p><code>ReentrantLock</code>实现了<code>Lock</code>接口，该接口定义了一系列用于获取锁、释放锁以及处理锁相关状态的方法，如<code>lock()</code>、<code>unlock()</code>、<code>tryLock()</code>等。通过这些方法，开发者可以更加精细地控制线程对共享资源的访问。</p>
+<h2 id="ReentrantLock特性">ReentrantLock特性</h2>
+<h3 id="可重入性">可重入性</h3>
+<p>如前所述，<code>ReentrantLock</code>的可重入性允许一个线程多次获取同一个锁。每次获取锁时，内部的计数器会递增，而每次释放锁时，计数器会递减，当计数器为 0 时，锁才真正被释放，其他线程才有机会获取该锁。</p>
+<h3 id="公平性与非公平性">公平性与非公平性</h3>
+<p><code>ReentrantLock</code>中有一个内部类，名为<code>Sync</code>，其有两个子类，<code>FairSync</code>和<code>NonfairSync</code>，分别意味着公平锁和非公平锁。</p>
+<ul>
+<li><strong>公平模式</strong>：在公平模式下，线程获取锁的顺序遵循先来后到的原则。当锁被释放时，等待时间最长的线程将优先获取锁。这种模式可以避免线程饥饿现象，即某个线程长时间无法获取锁而一直处于等待状态。但是，公平模式的实现通常会带来一定的性能开销，因为需要维护一个等待线程的队列，并按照顺序唤醒线程。</li>
+<li><strong>非公平模式</strong>：非公平模式下，线程获取锁时会先尝试直接获取，如果获取成功则直接进入临界区，而不会考虑是否有其他线程已经在等待。如果直接获取失败，才会像公平模式一样进入等待队列。这种模式的优点是减少了线程上下文切换和唤醒等待线程的开销，在高并发场景下可能会有更好的性能表现，但可能会导致某些线程长时间无法获取锁。</li>
+</ul>
+<p>默认情况下<code>ReentrantLock</code>是非公平锁，但也可以在创建<code>ReentrantLock</code>实例时通过构造函数参数指定公平模式，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ReentrantLock</span> <span class="hljs-variable">fairLock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>(<span class="hljs-literal">true</span>); <span class="hljs-comment">//创建一个公平锁。</span><br></code></pre></td></tr></table></figure>
+<h3 id="可中断锁与不可中断锁">可中断锁与不可中断锁</h3>
+<p>看名字也可以明显看出来，可中断锁就是在获取锁的过程中可以被中断，而不可中断所就是一旦申请了锁，便必须等到获取了锁之后才能做别的事情。</p>
+<p><code>ReentrantLock</code>支持锁中断操作。通过<code>lockInterruptibly()</code>方法获取锁时，如果线程在等待锁的过程中被中断，会抛出<code>InterruptedException</code>异常，从而允许线程响应中断信号并进行相应的处理。这在一些需要灵活控制线程等待时间或响应外部中断事件的场景中非常有用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ReentrantLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>();<br><span class="hljs-type">Thread</span> <span class="hljs-variable">thread</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// 尝试获取锁，如果被中断则抛出异常</span><br>        lock.lockInterruptibly();<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">// 临界区代码</span><br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            lock.unlock();<br>        &#125;<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        <span class="hljs-comment">// 处理中断异常</span><br>        System.out.println(<span class="hljs-string">&quot;线程被中断&quot;</span>);<br>    &#125;<br>&#125;);<br>thread.start();<br><span class="hljs-comment">// 中断线程</span><br>thread.interrupt();<br></code></pre></td></tr></table></figure>
+<h2 id="ReentrantLock-与-synchronized-的对比">ReentrantLock 与 synchronized 的对比</h2>
+<ul>
+<li>
+<p><code>ReentrantLock</code>比<code>synchronized</code>更加灵活，提供了诸如公平性选择、锁中断、条件变量等高级功能，而<code>synchronized</code>相对简单，仅提供基本的互斥和可重入功能。</p>
+</li>
+<li>
+<p><code>ReentrantLock</code>可以通过<code>tryLock()</code>方法尝试获取锁，立即返回获取锁是否成功的结果，而<code>synchronized</code>在获取锁失败时会一直阻塞线程。</p>
+</li>
+<li>
+<p>在低并发场景下，<code>synchronized</code>的性能与<code>ReentrantLock</code>（非公平模式）相近，因为<code>ReentrantLock</code>的非公平模式获取锁时也有一定的优化。</p>
+</li>
+<li>
+<p>在高并发场景下，如果对性能要求极高且能合理利用<code>ReentrantLock</code>的特性（如非公平模式减少线程上下文切换），<code>ReentrantLock</code>可能会有更好的性能表现；但如果使用公平模式且频繁地进行锁获取和释放操作，<code>ReentrantLock</code>可能会因为维护等待队列等操作而导致性能下降，而<code>synchronized</code>的性能相对稳定。</p>
+</li>
+<li>
+<p><code>synchronized</code>是 Java 语言的关键字，使用起来较为简洁，无需显式地创建锁对象和进行锁的释放操作（由虚拟机自动处理）。</p>
+</li>
+<li>
+<p><code>ReentrantLock</code>需要显式地创建锁对象，并且在<code>finally</code>块中手动释放锁，以确保锁的正确释放，否则可能会导致死锁或资源泄漏等问题，这增加了代码的编写和维护成本。</p>
+</li>
+</ul>
+<h1>扩展一下思维</h1>
+<p>我们讨论了这么久锁机制，似乎目前每一个锁都只允许一个线程持有。当然，这也合理，毕竟目前我们讨论的情况都是对共享资源进行大量混合的并发操作的情况。</p>
+<p>但是，实际上我们能够对共享资源能做的无非就是读和写两个行为，而在现实生活中，需要大规模读的情况往往远大于大规模写。而这显然是两种操作。</p>
+<p>那么现在就可以这么想，为什么不为这两种行为分别分配一把锁呢?</p>
+<p>这就是<strong>读写锁</strong>的由来。</p>
+<h2 id="读写锁">读写锁</h2>
+<p>Java中实现了读写锁的有<code>ReentrantReadWriteLock</code>，<code>StampedLock</code>。实际上就是为一个共享资源分配了两把锁，读锁和写锁。其中，读锁是<strong>共享锁</strong>，允许多个线程同时拥有。而写锁是<strong>独占锁</strong>，只能有一个线程拥有。</p>
+<p>可以想象一下我们可以用这种锁来干什么：</p>
+<ul>
+<li>大量的读操作中有少许写操作：写操作的突然乱入也许会导致读的结果出现问题，但是我们可以将写锁与读锁互斥，并且让写锁的出现阻塞后续的读锁。也就是说，执行写操作的线程需要等到读操作的线程执行完毕，而同时也会阻塞后续所有线程。写锁被释放后，后续的读操作依然能够正常执行。</li>
+<li>大量的写操作：这时候的锁的综合表现会像是重量级锁。</li>
+</ul>
+<p>想到这些，你也就差不多完成了对<code>ReentrantReadWriteLock</code>的理解。唯一需要加一句的是，已经获取了写锁的线程依然可以获取读锁，但是已经获取了读锁的线程却不允许获取写锁。想想为什么？</p>
+<p>综合来说，读写锁机制会对性能带来一些提升，毕竟现在并不会限制读操作的并发访问。</p>
+<p>然而，Java提出的<code>StampedLock</code>中引入了<strong>乐观读</strong>，旨在允许多个线程获取读锁的同时，也允许一个写线程获取写锁。这提高了并发性能，也是它比<code>ReentrantReadWriteLock</code>性能更好的原因。</p>
 <h1>引用</h1>
 <section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html#synchronized-%E5%85%B3%E9%94%AE%E5%AD%97">Java Guide</a>
 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
