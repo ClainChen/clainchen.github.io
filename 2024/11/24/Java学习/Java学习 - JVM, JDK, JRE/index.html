@@ -19,32 +19,25 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="想到有关Java集合类有关的内容，就是几点：  列表(ArrayList) 链表(LinkedList) 集合(Set, HashSet) 键值对(HashMap, HashTable) 线程安全  ArrayList相关 一般来说，ArrayList要不就是跟LinkedList进行对比，要不就是询问有关线程安全相关的内容。 ArrayList VS. Vector VS. Array VS.">
+    <meta name="description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java学习 - 集合类">
-<meta property="og:url" content="http://example.com/2024/12/03/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9B%86%E5%90%88%E7%B1%BB/index.html">
+<meta property="og:title" content="Java学习 - JVM, JDK, JRE">
+<meta property="og:url" content="http://example.com/2024/11/24/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20JVM,%20JDK,%20JRE/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="想到有关Java集合类有关的内容，就是几点：  列表(ArrayList) 链表(LinkedList) 集合(Set, HashSet) 键值对(HashMap, HashTable) 线程安全  ArrayList相关 一般来说，ArrayList要不就是跟LinkedList进行对比，要不就是询问有关线程安全相关的内容。 ArrayList VS. Vector VS. Array VS.">
+<meta property="og:description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-12-03T12:52:54.000Z">
-<meta property="article:modified_time" content="2024-12-05T06:43:36.279Z">
+<meta property="article:published_time" content="2024-11-24T12:45:00.000Z">
+<meta property="article:modified_time" content="2024-12-04T11:48:20.036Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java">
-<meta property="article:tag" content="集合类">
-<meta property="article:tag" content="ArrayList">
-<meta property="article:tag" content="LinkedList">
-<meta property="article:tag" content="Queue">
-<meta property="article:tag" content="HashMap">
-<meta property="article:tag" content="HashTable">
-<meta property="article:tag" content="ConcurrentHashMap">
-<meta property="article:tag" content="Vector">
-<meta property="article:tag" content="Array">
-<meta property="article:tag" content="HashSet">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="JDK">
+<meta property="article:tag" content="JRE">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java学习 - 集合类 - Clain的小屋</title>
+  <title>Java学习 - JVM, JDK, JRE - Clain的小屋</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -225,7 +218,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java学习 - 集合类"></span>
+            <span id="subtitle" data-typed-text="Java学习 - JVM, JDK, JRE"></span>
           
         </div>
 
@@ -236,8 +229,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-12-03 20:52" pubdate>
-          2024年12月3日 晚上
+        <time datetime="2024-11-24 20:45" pubdate>
+          2024年11月24日 晚上
         </time>
       </span>
     
@@ -248,7 +241,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          1.3k 字
         
       </span>
     
@@ -259,7 +252,7 @@
         
         
         
-          15 分钟
+          12 分钟
         
       </span>
     
@@ -305,166 +298,72 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java学习 - 集合类</h1>
+            <h1 id="seo-header">Java学习 - JVM, JDK, JRE</h1>
             
             
               <div class="markdown-body">
                 
-                <p>想到有关Java集合类有关的内容，就是几点：</p>
-<ul>
-<li>列表(ArrayList)</li>
-<li>链表(LinkedList)</li>
-<li>集合(Set, HashSet)</li>
-<li>键值对(HashMap, HashTable)</li>
-<li>线程安全</li>
-</ul>
-<h1>ArrayList相关</h1>
-<p>一般来说，<strong>ArrayList</strong>要不就是跟<strong>LinkedList</strong>进行对比，要不就是询问有关<strong>线程安全</strong>相关的内容。</p>
-<h2 id="ArrayList-VS-Vector-VS-Array-VS-LinkedList">ArrayList VS. Vector VS. Array VS. LinkedList</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">ArrayList</th>
-<th style="text-align:center">LinkedList</th>
-<th style="text-align:center">Vector</th>
-<th style="text-align:center">Array</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">底层维护的是一个数组</td>
-<td style="text-align:center">底层是一个双向链表</td>
-<td style="text-align:center">底层维护的是一个数组</td>
-<td style="text-align:center">本身就是一个数组</td>
-</tr>
-<tr>
-<td style="text-align:center">内存是连续的</td>
-<td style="text-align:center">内存不是连续的</td>
-<td style="text-align:center">内存是连续的</td>
-<td style="text-align:center">内存是连续的</td>
-</tr>
-<tr>
-<td style="text-align:center">支持随机访问</td>
-<td style="text-align:center">不支持随机访问</td>
-<td style="text-align:center">支持随机访问</td>
-<td style="text-align:center">支持随机访问</td>
-</tr>
-<tr>
-<td style="text-align:center">线程不安全</td>
-<td style="text-align:center">线程不安全</td>
-<td style="text-align:center">线程安全</td>
-<td style="text-align:center">线程不安全</td>
-</tr>
-</tbody>
-</table>
-<h2 id="ArrayList扩容">ArrayList扩容</h2>
-<p>关于ArrayList的扩容，可以将其分阶段来讲</p>
-<p>创建新ArrayList对象：</p>
-<ul>
-<li>指定了大小：ArrayList大小即为指定大小</li>
-<li>没有指定大小：ArrayList容量初始化为0</li>
-</ul>
-<p>添加元素：</p>
-<ul>
-<li>大小不为0：判断添加元素后ArrayList长度是否超过了capacity。如果超过了：
-<ul>
-<li>扩容后没有超过最大指定容量(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">MIN_ARRAY_SIZE</mtext></mrow><annotation encoding="application/x-tex">\texttt{MIN\_ARRAY\_SIZE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7063em;vertical-align:-0.0951em;"></span><span class="mord text"><span class="mord texttt">MIN_ARRAY_SIZE</span></span></span></span></span>)：<code>capacity = capacity + (capacity &gt;&gt; 1)</code>，基本上就是为原上限的1.5倍</li>
-<li>扩容后超过了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">MIN_ARRAY_SIZE</mtext></mrow><annotation encoding="application/x-tex">\texttt{MIN\_ARRAY\_SIZE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7063em;vertical-align:-0.0951em;"></span><span class="mord text"><span class="mord texttt">MIN_ARRAY_SIZE</span></span></span></span></span>：
-<ul>
-<li>超过了最大容量：<code>capacity = INTEGER.MAX_VALUE</code></li>
-<li>没有超过最大容量：<code>capacity = MIN_ARRAY_SIZE</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>扩容之后，新建一个容量为新<code>capacity</code>的数组，将旧数组内容使用<code>copyof()</code>复制到新数组中，将引用指向新数组的内存地址，释放旧数组。</li>
-</ul>
-<h2 id="CopyOnWriteArrayList">CopyOnWriteArrayList</h2>
-<p><strong>CopyOnWriteArrayList</strong>是一个线程安全的ArrayList，在现实中的运用场景，通常会假设读情况远远大于写情况。</p>
-<p>在该数据结构中引入了一个“写时复制”的理念，其核心非常简单。由于假设了读频率远大于写，所以在出现写的情况时，会生成一个原数组的拷贝，然后写操作只会在这个拷贝上进行修改。在修改结束之后，再将结果覆盖到原数组上。</p>
-<p><strong>除此以外，跟正常ArrayList的差别不大</strong>，<strong>为数不多的差别体现在CopyOnWriteArrayList中没有实现像ArrayList中那样的扩容机制。</strong></p>
-<h1>Map相关</h1>
-<p>Map的核心就是键值对，然后设计了一系列的针对解决高性能键值对操作问题的数据结构。</p>
-<h2 id="HashMap-VS-HashTable">HashMap VS. HashTable</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">HashMap</th>
-<th style="text-align:center">HashTable</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">非线程安全</td>
-<td style="text-align:center">线程安全</td>
-</tr>
-<tr>
-<td style="text-align:center">常用类</td>
-<td style="text-align:center">古早版本的产物，少用</td>
-</tr>
-<tr>
-<td style="text-align:center">接受null值</td>
-<td style="text-align:center">不接受null值</td>
-</tr>
-<tr>
-<td style="text-align:center">扩容机制: 2n</td>
-<td style="text-align:center">扩容机制: 2n+1</td>
-</tr>
-<tr>
-<td style="text-align:center">对哈希值进行了高位和低位<br />的混合扰动处理以减少冲突</td>
-<td style="text-align:center">直接使用hashcode()</td>
-</tr>
-<tr>
-<td style="text-align:center">桶大小小时：值为链表<br />桶大小大时：只为红黑树</td>
-<td style="text-align:center">没有动态策略</td>
-</tr>
-</tbody>
-</table>
-<p><strong>扩容机制:</strong></p>
-<p><strong>HashTable:</strong></p>
-<ul>
-<li>没有指定初始值：11</li>
-<li>扩容时： 2n +1</li>
-</ul>
-<p><strong>HashMap:</strong></p>
-<ul>
-<li>没有指定初始值：16</li>
-<li>指定了初始值：取决于初始值扩容到2的幂次方大小</li>
-<li>扩容时：2n</li>
-</ul>
-<h2 id="HashCode相关">HashCode相关</h2>
-<h3 id="经典问题：重写equals-时为什么必须重写hashCode-方法">经典问题：重写equals()时为什么必须重写hashCode()方法?</h3>
-<p>在将类实例添加到Hash相关数据结构中时，有如下步骤：</p>
+                <h1>Java SE vs Java EE</h1>
+<p>简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等。Java EE适合用于企业级分布式应用，适用于具有多层架构系统和高并发，高可用性需求的大型应用程序。</p>
+<p>由此，显然可以看出，Java EE对比Java SE是一个复杂得多的Java开发框架，因此，Java SE的应用场景和部署，配置难度对比起Java EE都简单许多。</p>
+<h1>JVM vs JDK vs JRE</h1>
+<p>从包含的角度来看，可以看成</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mi>V</mi><mi>M</mi><mo>⊂</mo><mi>J</mi><mi>R</mi><mi>E</mi><mo>⊂</mo><mi>J</mi><mi>D</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">JVM \subset JRE \sub JDK
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.05764em;">RE</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">DK</span></span></span></span></span></p>
+<p><strong>JVM (Java Virtual Machine)</strong>， 顾名思义，就是Java虚拟机。JVM是实现让Java程序真正做到&quot;Write Once, Run Everywhere&quot;的功臣，其可以针对不同系统，使用相同的字节码和不同的实现方法，以得到相同的结果。</p>
+<p><strong>JRE (Java RunTime Environment)</strong>， 顾名思义，也就是Java运行环境。其中显然包含了虚拟机，也包含了一系列基本的内置类库，用与基本运行Java程序所需的环境和类库。</p>
+<p><strong>JDK (Java Development Kit)</strong>，顾名思义，也就是Java开发工具包，其中包含了JRE和JVM，并能够创建和编译Java程序(javac)。JDK拥有更多额外的工具，比如javadoc（文档生成器）、jdb（调试器）、jconsole（监控工具）、javap（反编译工具）等<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide: 基础常见面试题总结（上）](https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre)">[2]</span></a></sup>。</p>
+<h1>优化一下Java运行速度吧！</h1>
+<p>Java程序的运行逻辑基本上可以理解为：</p>
+<pre><code class=" mermaid">graph LR
+
+c1[编写.java文件] --javac编译--&gt; c2[生成.class 字节码文件]
+c2 --JVM解释器&amp;JIT--&gt; c3[机器码]
+c3 --&gt; 运行程序
+</code></pre>
+<p>在将.class文件转化为机器码的过程中，JVM类加载器首先会加载.class文件,然后通过解释器逐行解释执行。可以看出，这样子会比较慢。由于有些代码块会经常被调用，因此，不难想到可以将这些经常被用到的代码块的机器码保存下来，以节省大量的时间，这看起来就像是一种缓存的机制。</p>
+<p>综上，Java引进了名为**JIT (Just In Time Compilation)**的编译器，使其在程序运行时进行动态的编译。其核心逻辑是，对于热点代码块，JIT会在完成第一次编译后将对应的机器码保存下来，以供下次直接使用。这时候我想到了一个问题：<strong>对于一个庞大的系统来说，JIT所带来的缓存量也会很大，也许会对内存带来很大的压力。我们应该如何处理这个问题？</strong></p>
+<h2 id="JVM如何管理JIT缓存的内存-sup-id-fnref-1-class-footnote-ref-a-href-fn-1-rel-footnote-span-class-hint-top-hint-rounded-aria-label-来自于GPT老师-1-span-a-sup">JVM如何管理JIT缓存的内存<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[1]</span></a></sup></h2>
+<p>JVM 使用以下机制来管理 JIT 编译生成的本地代码及其缓存：</p>
 <ol>
-<li>计算该实例对应的hashCode()，同时计算其他已添加到数据结构中对象的hashCode</li>
-<li>如果没有相同hashCode，程序会认为没有相同对象被添加进结构中，否则调用equals方法来判断两个对象是否相同</li>
-<li>根据结果，判断是否成功添加了对象</li>
-</ol>
-<p>由以上可以看出来，在某些情况下，equals和hashCode都被用来检测两个对象是否相等，如果没有重写hashCode方法，也许会发生以下问题：</p>
+<li><strong>代码缓存区（Code Cache）：</strong>
 <ul>
-<li>两个不同的对象由极大可能性拥有相同的hashCode，这违背了java的equals与hashcode的契约（即对象A与对象Bequals  -&gt; 对象A的hashcode与对象B的hashcode相同）</li>
-<li>添加对象到结构中时，equals为true的两个对象也许hashcode不相同，这导致两个本应放在相近或者同一个桶中的对象被分在了不同的桶中</li>
-<li>在结构中查找对象时，无法精确定位到目标对象，导致潜在的错误的查询失败问题</li>
+<li>JVM 在内存中分配一个固定大小的区域，用于存储 JIT 编译后的本地机器码。</li>
+<li>代码缓存有容量限制，当缓存满时，JVM 会自动清理较老或较少使用的编译代码，以腾出空间给新的热点代码。</li>
 </ul>
-<h2 id="LinkedHashMap">LinkedHashMap</h2>
-<p>其本质就是为每一个键值添加了一个双向链表节点的特性，让他们多了一个next指针和一个prev指针。</p>
-<p>由于依然保留了HashMap的特性，LinkedHashMap在桶大小到了一定阈值时便将内部结构变为红黑树。因此，可以延伸出一个问题：这里的红黑树节点与HashMap的红黑树节点是一样的吗？</p>
-<p><strong>答案是一样的</strong>，HashMap中的TreeNode继承了有双向链表特性的Entry。这让它们有着Entry的特性的同时，也拥有TreeNode的特性。只是在HashMap中并不会用到Entry的特性。Java的设计者应该是为了统一节点风格而这么做的。但是这样做，似乎会让TreeNode多了两个没有用的引用指针，导致资源浪费。关于这一点，听听Java设计者怎么说的：</p>
-<div class="note note-info">
-            <p>Because TreeNodes are about twice the size of regular nodes, weuse them only when bins contain enough nodes to warrant use(see TREEIFY_THRESHOLD). And when they become too small (due toremoval or resizing) they are converted back to plain bins.  Inusages with well-distributed user hashCodes, tree bins arerarely used.  Ideally, under random hashCodes, the frequency ofnodes in bins follows a Poisson distribution</p>
-          </div>
-<p>大意就是HashMap中的键值被转化为红黑树的可能性比较低。就算转为红黑树变为树节点，也可能会因为移除或者扩容将 <code>TreeNode</code> 变为 <code>Node</code>，所以 <code>TreeNode</code> 的使用概率不算很大，对于这一点资源空间的浪费是可以接受的。<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[LinkedHashMap 源码分析](https://javaguide.cn/java/collection/linkedhashmap-source-code.html)">[1]</span></a></sup></p>
-<h2 id="ConcurrentHashMap">ConcurrentHashMap</h2>
-<p>顾名思义，是一个线程安全的HashMap。这个类被分为两个时期进行讨论</p>
-<h3 id="Java-8-以前">Java 8 以前</h3>
-<p>采用了Segment + HashMap的方式，将HashMap数据分为多个Segment,每一个Segment中都维护着一个类似于HashMap的结构。每一个Segment中都分配了一把锁，以保证在对某一个Segment中的内容进行操作时，不会让其他Segment中的内容的读写造成影响。</p>
-<p>这里的Segment继承了ReentrantLock，所以每一个Segment本身也就是一个可重入锁。在1.8以前，ConcurrentHashMap维护的是一个Segment数组，其大小在初始化之后便无法改变，也就是说，假设初始化大小为n，则意味着最高可支持n个线程并行操作。然而，默认n = 16。</p>
-<h3 id="Java-8之后">Java 8之后</h3>
-<p>摒弃了Segment，采取了Node + CAS / Synchronized 来实现线程安全。当然，这里的Node取决于键值形式，也许是双向链表Node，也也许是TreeNode。</p>
-<p>新的ConcurrentHashMap大量使用了CAS机制来进行读写操作，但是在某些情况下依然会使用Synchronized来保证线程安全。比如说，当一个桶的大小（冲突量）超过阈值，需要将键值结构转为红黑树时，ConcurrentHashMap会使用Synchronized将该key中的内容锁住，以保证数据完整性和安全性。</p>
-<h1>引用</h1>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/collection/linkedhashmap-source-code.html">LinkedHashMap 源码分析</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+</li>
+<li><strong>分层编译（Tiered Compilation）：</strong>
+<ul>
+<li>JVM 会分阶段优化代码，减少不必要的内存占用。
+<ul>
+<li>初始阶段：使用 C1 编译器快速生成基本的本地代码，占用内存少但优化程度较低。</li>
+<li>热点阶段：使用 C2 编译器对高频代码进行深度优化，占用更多内存，但执行效率更高。</li>
+</ul>
+</li>
+<li>如果代码热点不再频繁使用，JVM 可能会将其标记为可清理对象。</li>
+</ul>
+</li>
+<li><strong>垃圾回收（GC）与代码缓存清理：</strong>
+<ul>
+<li>JVM 的垃圾回收机制不仅负责清理堆内存，还可以清理代码缓存中的无用代码。</li>
+<li>无效或不再使用的 JIT 编译代码会被标记并清理，以释放内存。</li>
+</ul>
+</li>
+</ol>
+<p>对于代码缓存，JVM提供了一些参数用来调整缓存区域的大小，或者是将代码块识别为热点代码所需的阈值:</p>
+<ul>
+<li><code>-XX:InitialCodeCacheSize</code>: 代码缓存的初始大小</li>
+<li><code>-XX:ReservedCodeCacheSize</code>: 代码缓存的最大大小</li>
+<li><code>-XX:CompileThreshold</code>: 将代码识别为热点代码所需的调用次数阈值</li>
+</ul>
+<h2 id="Java包装类的缓存">Java包装类的缓存</h2>
+<p><strong>包装类</strong>是对Java中基本类型的封装。一般来说，包装类的创建<code>.valueOf(...)</code>会占用内存，而对于一些常用的、小范围的数值（例如 0 到 127 的 <code>Integer</code>），频繁创建和销毁对象会导致较大的内存浪费。因此，在JDK5中引入了一个缓存机制，其会在类初始化时，提前创建好会被频繁使用的包装类对象。这种机制常见于 <code>Integer</code>、<code>Byte</code>、<code>Short</code>、<code>Long</code> 和 <code>Character</code> 等包装类，目的是为了优化内存的使用并提高性能。</p>
+<p><strong>注意：在构造函数中，不会使用缓存机制，比如：</strong><code>Integer a = new Integer(100);</code></p>
+<p><strong>自动装箱的过程会使用缓存，因为其底层代码是调用了封装类的</strong><code>valueOf()</code><strong>这个方法</strong>。</p>
+<h1>参考资料</h1>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>来自于GPT老师
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre">Java Guide: 基础常见面试题总结（上）</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
@@ -499,25 +398,11 @@
       
         <a href="/tags/Java/" class="print-no-link">#Java</a>
       
-        <a href="/tags/%E9%9B%86%E5%90%88%E7%B1%BB/" class="print-no-link">#集合类</a>
+        <a href="/tags/JVM/" class="print-no-link">#JVM</a>
       
-        <a href="/tags/ArrayList/" class="print-no-link">#ArrayList</a>
+        <a href="/tags/JDK/" class="print-no-link">#JDK</a>
       
-        <a href="/tags/LinkedList/" class="print-no-link">#LinkedList</a>
-      
-        <a href="/tags/Queue/" class="print-no-link">#Queue</a>
-      
-        <a href="/tags/HashMap/" class="print-no-link">#HashMap</a>
-      
-        <a href="/tags/HashTable/" class="print-no-link">#HashTable</a>
-      
-        <a href="/tags/ConcurrentHashMap/" class="print-no-link">#ConcurrentHashMap</a>
-      
-        <a href="/tags/Vector/" class="print-no-link">#Vector</a>
-      
-        <a href="/tags/Array/" class="print-no-link">#Array</a>
-      
-        <a href="/tags/HashSet/" class="print-no-link">#HashSet</a>
+        <a href="/tags/JRE/" class="print-no-link">#JRE</a>
       
     </div>
   
@@ -529,8 +414,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java学习 - 集合类</div>
-      <div>http://example.com/2024/12/03/Java学习 - 集合类/</div>
+      <div>Java学习 - JVM, JDK, JRE</div>
+      <div>http://example.com/2024/11/24/Java学习/Java学习 - JVM, JDK, JRE/</div>
     </div>
     <div class="license-meta">
       
@@ -542,7 +427,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年12月3日</div>
+          <div>2024年11月24日</div>
         </div>
       
       
@@ -574,21 +459,15 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/12/04/Java%E5%AD%A6%E4%B9%A0%20-%20%E8%BF%9B%E7%A8%8B%EF%BC%8C%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%8D%8F%E7%A8%8B/" title="Java学习 - 进程，线程，协程">
+                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java学习 - 进程，线程，协程</span>
+                        <span class="hidden-mobile">Java学习 - 面向对象</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/2024/12/03/Java%E5%AD%A6%E4%B9%A0%20-%20%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="Java学习 - 基本数据类型">
-                        <span class="hidden-mobile">Java学习 - 基本数据类型</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>
@@ -648,6 +527,21 @@
   
 
 
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 

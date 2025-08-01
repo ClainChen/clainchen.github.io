@@ -19,25 +19,23 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+    <meta name="description" content="基本数据类型 Java中有8种数据类型    名称 包装类 位数 占用字节 默认值 是否有默认缓存？ 取值范围     byte Byte 8 1 0 是 [-2^7, 2^7 - 1]   short Short 16 2 0 是 [-2^15, 2^15 - 1]   int Integer 32 4 0 是 [-2^31, 2^31 - 1]   long Long 64 8 0L 是 [-">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java学习 - JVM, JDK, JRE">
-<meta property="og:url" content="http://example.com/2024/11/24/Java%E5%AD%A6%E4%B9%A0%20-%20JVM,%20JDK,%20JRE/index.html">
+<meta property="og:title" content="Java学习 - 基本数据类型">
+<meta property="og:url" content="http://example.com/2024/12/03/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+<meta property="og:description" content="基本数据类型 Java中有8种数据类型    名称 包装类 位数 占用字节 默认值 是否有默认缓存？ 取值范围     byte Byte 8 1 0 是 [-2^7, 2^7 - 1]   short Short 16 2 0 是 [-2^15, 2^15 - 1]   int Integer 32 4 0 是 [-2^31, 2^31 - 1]   long Long 64 8 0L 是 [-">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-24T12:45:00.000Z">
-<meta property="article:modified_time" content="2024-12-04T11:48:20.036Z">
+<meta property="article:published_time" content="2024-12-03T08:21:38.000Z">
+<meta property="article:modified_time" content="2024-12-05T06:45:07.524Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java">
-<meta property="article:tag" content="JVM">
-<meta property="article:tag" content="JDK">
-<meta property="article:tag" content="JRE">
+<meta property="article:tag" content="数据类型">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java学习 - JVM, JDK, JRE - Clain的小屋</title>
+  <title>Java学习 - 基本数据类型 - Clain的小屋</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -48,8 +46,6 @@
   <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
 
 
 
@@ -218,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java学习 - JVM, JDK, JRE"></span>
+            <span id="subtitle" data-typed-text="Java学习 - 基本数据类型"></span>
           
         </div>
 
@@ -229,8 +225,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-24 20:45" pubdate>
-          2024年11月24日 晚上
+        <time datetime="2024-12-03 16:21" pubdate>
+          2024年12月3日 下午
         </time>
       </span>
     
@@ -252,7 +248,7 @@
         
         
         
-          12 分钟
+          11 分钟
         
       </span>
     
@@ -298,72 +294,129 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java学习 - JVM, JDK, JRE</h1>
+            <h1 id="seo-header">Java学习 - 基本数据类型</h1>
             
             
               <div class="markdown-body">
                 
-                <h1>Java SE vs Java EE</h1>
-<p>简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等。Java EE适合用于企业级分布式应用，适用于具有多层架构系统和高并发，高可用性需求的大型应用程序。</p>
-<p>由此，显然可以看出，Java EE对比Java SE是一个复杂得多的Java开发框架，因此，Java SE的应用场景和部署，配置难度对比起Java EE都简单许多。</p>
-<h1>JVM vs JDK vs JRE</h1>
-<p>从包含的角度来看，可以看成</p>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mi>V</mi><mi>M</mi><mo>⊂</mo><mi>J</mi><mi>R</mi><mi>E</mi><mo>⊂</mo><mi>J</mi><mi>D</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">JVM \subset JRE \sub JDK
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.05764em;">RE</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">DK</span></span></span></span></span></p>
-<p><strong>JVM (Java Virtual Machine)</strong>， 顾名思义，就是Java虚拟机。JVM是实现让Java程序真正做到&quot;Write Once, Run Everywhere&quot;的功臣，其可以针对不同系统，使用相同的字节码和不同的实现方法，以得到相同的结果。</p>
-<p><strong>JRE (Java RunTime Environment)</strong>， 顾名思义，也就是Java运行环境。其中显然包含了虚拟机，也包含了一系列基本的内置类库，用与基本运行Java程序所需的环境和类库。</p>
-<p><strong>JDK (Java Development Kit)</strong>，顾名思义，也就是Java开发工具包，其中包含了JRE和JVM，并能够创建和编译Java程序(javac)。JDK拥有更多额外的工具，比如javadoc（文档生成器）、jdb（调试器）、jconsole（监控工具）、javap（反编译工具）等<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide: 基础常见面试题总结（上）](https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre)">[2]</span></a></sup>。</p>
-<h1>优化一下Java运行速度吧！</h1>
-<p>Java程序的运行逻辑基本上可以理解为：</p>
-<pre><code class=" mermaid">graph LR
-
-c1[编写.java文件] --javac编译--&gt; c2[生成.class 字节码文件]
-c2 --JVM解释器&amp;JIT--&gt; c3[机器码]
-c3 --&gt; 运行程序
-</code></pre>
-<p>在将.class文件转化为机器码的过程中，JVM类加载器首先会加载.class文件,然后通过解释器逐行解释执行。可以看出，这样子会比较慢。由于有些代码块会经常被调用，因此，不难想到可以将这些经常被用到的代码块的机器码保存下来，以节省大量的时间，这看起来就像是一种缓存的机制。</p>
-<p>综上，Java引进了名为**JIT (Just In Time Compilation)**的编译器，使其在程序运行时进行动态的编译。其核心逻辑是，对于热点代码块，JIT会在完成第一次编译后将对应的机器码保存下来，以供下次直接使用。这时候我想到了一个问题：<strong>对于一个庞大的系统来说，JIT所带来的缓存量也会很大，也许会对内存带来很大的压力。我们应该如何处理这个问题？</strong></p>
-<h2 id="JVM如何管理JIT缓存的内存-sup-id-fnref-1-class-footnote-ref-a-href-fn-1-rel-footnote-span-class-hint-top-hint-rounded-aria-label-来自于GPT老师-1-span-a-sup">JVM如何管理JIT缓存的内存<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[1]</span></a></sup></h2>
-<p>JVM 使用以下机制来管理 JIT 编译生成的本地代码及其缓存：</p>
+                <h1>基本数据类型</h1>
+<p>Java中有8种数据类型</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th>包装类</th>
+<th style="text-align:center">位数</th>
+<th style="text-align:center">占用字节</th>
+<th style="text-align:center">默认值</th>
+<th style="text-align:center">是否有默认缓存？</th>
+<th style="text-align:center">取值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">byte</td>
+<td>Byte</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">[-2^7, 2^7 - 1]</td>
+</tr>
+<tr>
+<td style="text-align:center">short</td>
+<td>Short</td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">[-2^15, 2^15 - 1]</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td>Integer</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">[-2^31, 2^31 - 1]</td>
+</tr>
+<tr>
+<td style="text-align:center">long</td>
+<td>Long</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">0L</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">[-2^ 63, 2^63 - 1]</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td>Float</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">0f</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">1.4E-45 ~ 3.4028235E38</td>
+</tr>
+<tr>
+<td style="text-align:center">double</td>
+<td>Double</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">0d</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">4.9E-324 ~ 1.7976931348623157E308</td>
+</tr>
+<tr>
+<td style="text-align:center">char</td>
+<td>Character</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">‘u0000’</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">0 ~ 65535（2^16 - 1）</td>
+</tr>
+<tr>
+<td style="text-align:center">boolean</td>
+<td>Boolean</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">未明确定义</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">true、false</td>
+</tr>
+</tbody>
+</table>
+<p>Java中，局部变量会被存入Java虚拟机栈中的局部变量表中，未被static修饰的基本数据则被存入Java虚拟机的堆中。而对于包装类，其本质是一个对象，而显而易见，基本上所有对象都被存在堆中。</p>
+<div class="note note-info">
+            <p><strong>为什么说是几乎所有对象实例都存在于堆中呢？</strong> 这是因为 HotSpot 虚拟机引入了 JIT 优化之后，会对对象进行逃逸分析，如果发现某一个对象并没有逃逸到方法外部，那么就可能通过标量替换来实现栈上分配，而避免堆上分配内存 <sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[基础常用面试题总结(上)](https://javaguide.cn/java/basis/java-basic-questions-01.htmlJava)">[1]</span></a></sup></p>
+          </div>
+<h2 id="基础数据包装类的默认缓存">基础数据包装类的默认缓存</h2>
+<p>Java为大部分基础数据的包装类都添加了默认缓存，对于整型系列，都有[-128, 127]的缓存。对于Character则是[0,127]，而对于Boolean则是(True, False)。</p>
+<p>默认缓存的意义在于将一些经常使用的对象优先进行缓存，以便在实际操作时减少由于频繁创建对象带来的性能损耗。</p>
+<p><strong>缓存的实现，从底层代码来看是一目了然的</strong>。这里给一个Integer的例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Integer <span class="hljs-title function_">valueOf</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123;<br>    <span class="hljs-keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)<br>        <span class="hljs-keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(i);<br>&#125;<br><br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IntegerCache</span> &#123;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">low</span> <span class="hljs-operator">=</span> -<span class="hljs-number">128</span>;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> high;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Integer cache[];<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        <span class="hljs-comment">// high value may be configured by property</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">h</span> <span class="hljs-operator">=</span> <span class="hljs-number">127</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">integerCacheHighPropValue</span> <span class="hljs-operator">=</span><br>            sun.misc.VM.getSavedProperty(<span class="hljs-string">&quot;java.lang.Integer.IntegerCache.high&quot;</span>);<br>        <span class="hljs-keyword">if</span> (integerCacheHighPropValue != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> parseInt(integerCacheHighPropValue);<br>                i = Math.max(i, <span class="hljs-number">127</span>);<br>                <span class="hljs-comment">// Maximum array size is Integer.MAX_VALUE</span><br>                h = Math.min(i, Integer.MAX_VALUE - (-low) -<span class="hljs-number">1</span>);<br>            &#125; <span class="hljs-keyword">catch</span>( NumberFormatException nfe) &#123;<br>                <span class="hljs-comment">// If the property cannot be parsed into an int, ignore it.</span><br>            &#125;<br>        &#125;<br>        high = h;<br><br>        cache = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>[(high - low) + <span class="hljs-number">1</span>];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> low;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> <span class="hljs-variable">k</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; k &lt; cache.length; k++)<br>            cache[k] = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(j++);<br><br>        <span class="hljs-comment">// range [-128, 127] must be interned (JLS7 5.1.7)</span><br>        <span class="hljs-keyword">assert</span> IntegerCache.high &gt;= <span class="hljs-number">127</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">IntegerCache</span><span class="hljs-params">()</span> &#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到，<strong><code>...Cache</code>是一个静态类</strong>，内部信息在类加载的时候便会被加载到内存中去（<strong>放进常量池</strong>）。<code>...Cache</code>这个静态类中维护了一个类型为<code>...</code>的数组，并在类加载时便初始化。valueOf()方法通常在装箱的时候调用，因此可以知道，装箱时并不是直接创建一个存储了基本类型的对象，而是先对基本类型进行一个范围判断知乎决定是否创建一个新的对象还是从缓存中获取对象。其他的包装类缓存也是大同小异，不过可以从中看出来，缓存的上限是可以通过JVM参数自定义的：<code>-XX:AutoBoxCacheMax</code>。</p>
+<p>对于浮点数系列则没有设置缓存，个人觉得有如下几个原因：</p>
 <ol>
-<li><strong>代码缓存区（Code Cache）：</strong>
-<ul>
-<li>JVM 在内存中分配一个固定大小的区域，用于存储 JIT 编译后的本地机器码。</li>
-<li>代码缓存有容量限制，当缓存满时，JVM 会自动清理较老或较少使用的编译代码，以腾出空间给新的热点代码。</li>
-</ul>
-</li>
-<li><strong>分层编译（Tiered Compilation）：</strong>
-<ul>
-<li>JVM 会分阶段优化代码，减少不必要的内存占用。
-<ul>
-<li>初始阶段：使用 C1 编译器快速生成基本的本地代码，占用内存少但优化程度较低。</li>
-<li>热点阶段：使用 C2 编译器对高频代码进行深度优化，占用更多内存，但执行效率更高。</li>
-</ul>
-</li>
-<li>如果代码热点不再频繁使用，JVM 可能会将其标记为可清理对象。</li>
-</ul>
-</li>
-<li><strong>垃圾回收（GC）与代码缓存清理：</strong>
-<ul>
-<li>JVM 的垃圾回收机制不仅负责清理堆内存，还可以清理代码缓存中的无用代码。</li>
-<li>无效或不再使用的 JIT 编译代码会被标记并清理，以释放内存。</li>
-</ul>
-</li>
+<li>浮点是连续的。相较于整型，浮点很难在实际操作中对某一些数进行预缓存，并且经常使用它们。既然无法确保这一点，便无法提升性能。</li>
+<li>浮点本身便有精度问题。</li>
 </ol>
-<p>对于代码缓存，JVM提供了一些参数用来调整缓存区域的大小，或者是将代码块识别为热点代码所需的阈值:</p>
-<ul>
-<li><code>-XX:InitialCodeCacheSize</code>: 代码缓存的初始大小</li>
-<li><code>-XX:ReservedCodeCacheSize</code>: 代码缓存的最大大小</li>
-<li><code>-XX:CompileThreshold</code>: 将代码识别为热点代码所需的调用次数阈值</li>
-</ul>
-<h2 id="Java包装类的缓存">Java包装类的缓存</h2>
-<p><strong>包装类</strong>是对Java中基本类型的封装。一般来说，包装类的创建<code>.valueOf(...)</code>会占用内存，而对于一些常用的、小范围的数值（例如 0 到 127 的 <code>Integer</code>），频繁创建和销毁对象会导致较大的内存浪费。因此，在JDK5中引入了一个缓存机制，其会在类初始化时，提前创建好会被频繁使用的包装类对象。这种机制常见于 <code>Integer</code>、<code>Byte</code>、<code>Short</code>、<code>Long</code> 和 <code>Character</code> 等包装类，目的是为了优化内存的使用并提高性能。</p>
-<p><strong>注意：在构造函数中，不会使用缓存机制，比如：</strong><code>Integer a = new Integer(100);</code></p>
-<p><strong>自动装箱的过程会使用缓存，因为其底层代码是调用了封装类的</strong><code>valueOf()</code><strong>这个方法</strong>。</p>
-<h1>参考资料</h1>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>来自于GPT老师
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre">Java Guide: 基础常见面试题总结（上）</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<h2 id="装箱与拆箱">装箱与拆箱</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Integer</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>; <span class="hljs-comment">// 装箱</span><br><span class="hljs-type">int</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> a; <span class="hljs-comment">// 拆箱</span><br></code></pre></td></tr></table></figure>
+<p><strong>装箱：</strong> 调用包装类的valueOf()方法 （<code>Integer a = Integer.valueOf(10);</code>），因此在装箱时会判断对应值是否在缓存范围内，来决定是否直接返回缓存内容。</p>
+<p><strong>拆箱：</strong> 调用xxxValue()方法 (<code>int b = a.intValue();</code>)。</p>
+<h2 id="浮点数精度问题">浮点数精度问题</h2>
+<p>其实很好理解，计算机来理解一个数，总是会有一个用于存储数据的字节量，而这个字节量一定是有限的，所以只能够存储一定位数的数据。作为浮点数（小数），我们都知道，我们无法确保其一定会是有限位数的小数，比如说无限循环小数，无理数等等。这些书无法用限定的字节量来精确表达，只能够到让它们到了一定小数点后位数之后将其截断，这也就是造成了浮点数的精度问题的其中之一。</p>
+<p>我个人认为这么回答也没有问题，但是浮点数精度问题也是由于用于表示浮点数的二进制标准带来的问题。对于float来说，字节位数为32，细节分下来：第一位为符号位，2-9是指数位，10-32是尾数位。(double则是1为符号位，2-12是指数位，13-64是尾数位)。理论上而言，足够长的位数能够将浮点数的精度误差近似为0，但是终究会有表示能力的问题，这会让一些十进制的小数在表示二进制时是无限循环小数。</p>
+<h3 id="如何解决精度问题">如何解决精度问题</h3>
+<p><strong>考虑浮点数本身：</strong> 可以使用<code>BigDecimal</code>类来解决精度问题</p>
+<p><strong>考虑浮点数之间的大小关系问题</strong> ： 可以为浮点数之间设一个误差空间来消除精度带来的问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">float</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">2.0f</span> - <span class="hljs-number">1.9f</span>;<br><span class="hljs-type">float</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.8f</span> - <span class="hljs-number">1.7f</span>;<br>System.out.println(a == b); <span class="hljs-comment">// false</span><br>System.out.println(Math.abs(a  - b) &lt; <span class="hljs-number">0.00001f</span>); <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+<h1>引用</h1>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.htmlJava">基础常用面试题总结(上)</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
@@ -398,11 +451,7 @@ c3 --&gt; 运行程序
       
         <a href="/tags/Java/" class="print-no-link">#Java</a>
       
-        <a href="/tags/JVM/" class="print-no-link">#JVM</a>
-      
-        <a href="/tags/JDK/" class="print-no-link">#JDK</a>
-      
-        <a href="/tags/JRE/" class="print-no-link">#JRE</a>
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="print-no-link">#数据类型</a>
       
     </div>
   
@@ -414,8 +463,8 @@ c3 --&gt; 运行程序
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java学习 - JVM, JDK, JRE</div>
-      <div>http://example.com/2024/11/24/Java学习 - JVM, JDK, JRE/</div>
+      <div>Java学习 - 基本数据类型</div>
+      <div>http://example.com/2024/12/03/Java学习/Java学习 - 基本数据类型/</div>
     </div>
     <div class="license-meta">
       
@@ -427,7 +476,7 @@ c3 --&gt; 运行程序
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月24日</div>
+          <div>2024年12月3日</div>
         </div>
       
       
@@ -459,15 +508,21 @@ c3 --&gt; 运行程序
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
+                      <a href="/2024/12/03/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9B%86%E5%90%88%E7%B1%BB/" title="Java学习 - 集合类">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java学习 - 面向对象</span>
+                        <span class="hidden-mobile">Java学习 - 集合类</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
+                        <span class="hidden-mobile">Java学习 - 面向对象</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
@@ -522,26 +577,6 @@ c3 --&gt; 运行程序
 
   
 
-
-  
-  
-
-
-
-
-  <script>
-  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
-    mermaid.initialize({"theme":"default"});
-
-    Fluid.utils.listenDOMLoaded(function() {
-      Fluid.events.registerRefreshCallback(function() {
-        if ('mermaid' in window) {
-          mermaid.init();
-        }
-      });
-    });
-  });
-</script>
 
 
 

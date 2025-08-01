@@ -19,23 +19,32 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="基本数据类型 Java中有8种数据类型    名称 包装类 位数 占用字节 默认值 是否有默认缓存？ 取值范围     byte Byte 8 1 0 是 [-2^7, 2^7 - 1]   short Short 16 2 0 是 [-2^15, 2^15 - 1]   int Integer 32 4 0 是 [-2^31, 2^31 - 1]   long Long 64 8 0L 是 [-">
+    <meta name="description" content="想到有关Java集合类有关的内容，就是几点：  列表(ArrayList) 链表(LinkedList) 集合(Set, HashSet) 键值对(HashMap, HashTable) 线程安全  ArrayList相关 一般来说，ArrayList要不就是跟LinkedList进行对比，要不就是询问有关线程安全相关的内容。 ArrayList VS. Vector VS. Array VS.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java学习 - 基本数据类型">
-<meta property="og:url" content="http://example.com/2024/12/03/Java%E5%AD%A6%E4%B9%A0%20-%20%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:title" content="Java学习 - 集合类">
+<meta property="og:url" content="http://example.com/2024/12/03/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9B%86%E5%90%88%E7%B1%BB/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="基本数据类型 Java中有8种数据类型    名称 包装类 位数 占用字节 默认值 是否有默认缓存？ 取值范围     byte Byte 8 1 0 是 [-2^7, 2^7 - 1]   short Short 16 2 0 是 [-2^15, 2^15 - 1]   int Integer 32 4 0 是 [-2^31, 2^31 - 1]   long Long 64 8 0L 是 [-">
+<meta property="og:description" content="想到有关Java集合类有关的内容，就是几点：  列表(ArrayList) 链表(LinkedList) 集合(Set, HashSet) 键值对(HashMap, HashTable) 线程安全  ArrayList相关 一般来说，ArrayList要不就是跟LinkedList进行对比，要不就是询问有关线程安全相关的内容。 ArrayList VS. Vector VS. Array VS.">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-12-03T08:21:38.000Z">
-<meta property="article:modified_time" content="2024-12-05T06:45:07.524Z">
+<meta property="article:published_time" content="2024-12-03T12:52:54.000Z">
+<meta property="article:modified_time" content="2024-12-05T06:43:36.279Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="Java">
-<meta property="article:tag" content="数据类型">
+<meta property="article:tag" content="集合类">
+<meta property="article:tag" content="ArrayList">
+<meta property="article:tag" content="LinkedList">
+<meta property="article:tag" content="Queue">
+<meta property="article:tag" content="HashMap">
+<meta property="article:tag" content="HashTable">
+<meta property="article:tag" content="ConcurrentHashMap">
+<meta property="article:tag" content="Vector">
+<meta property="article:tag" content="Array">
+<meta property="article:tag" content="HashSet">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java学习 - 基本数据类型 - Clain的小屋</title>
+  <title>Java学习 - 集合类 - Clain的小屋</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -46,6 +55,8 @@
   <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
 
 
 
@@ -214,7 +225,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java学习 - 基本数据类型"></span>
+            <span id="subtitle" data-typed-text="Java学习 - 集合类"></span>
           
         </div>
 
@@ -225,8 +236,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-12-03 16:21" pubdate>
-          2024年12月3日 下午
+        <time datetime="2024-12-03 20:52" pubdate>
+          2024年12月3日 晚上
         </time>
       </span>
     
@@ -237,7 +248,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.7k 字
         
       </span>
     
@@ -248,7 +259,7 @@
         
         
         
-          11 分钟
+          15 分钟
         
       </span>
     
@@ -294,128 +305,165 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java学习 - 基本数据类型</h1>
+            <h1 id="seo-header">Java学习 - 集合类</h1>
             
             
               <div class="markdown-body">
                 
-                <h1>基本数据类型</h1>
-<p>Java中有8种数据类型</p>
+                <p>想到有关Java集合类有关的内容，就是几点：</p>
+<ul>
+<li>列表(ArrayList)</li>
+<li>链表(LinkedList)</li>
+<li>集合(Set, HashSet)</li>
+<li>键值对(HashMap, HashTable)</li>
+<li>线程安全</li>
+</ul>
+<h1>ArrayList相关</h1>
+<p>一般来说，<strong>ArrayList</strong>要不就是跟<strong>LinkedList</strong>进行对比，要不就是询问有关<strong>线程安全</strong>相关的内容。</p>
+<h2 id="ArrayList-VS-Vector-VS-Array-VS-LinkedList">ArrayList VS. Vector VS. Array VS. LinkedList</h2>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">名称</th>
-<th>包装类</th>
-<th style="text-align:center">位数</th>
-<th style="text-align:center">占用字节</th>
-<th style="text-align:center">默认值</th>
-<th style="text-align:center">是否有默认缓存？</th>
-<th style="text-align:center">取值范围</th>
+<th style="text-align:center">ArrayList</th>
+<th style="text-align:center">LinkedList</th>
+<th style="text-align:center">Vector</th>
+<th style="text-align:center">Array</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">byte</td>
-<td>Byte</td>
-<td style="text-align:center">8</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">[-2^7, 2^7 - 1]</td>
+<td style="text-align:center">底层维护的是一个数组</td>
+<td style="text-align:center">底层是一个双向链表</td>
+<td style="text-align:center">底层维护的是一个数组</td>
+<td style="text-align:center">本身就是一个数组</td>
 </tr>
 <tr>
-<td style="text-align:center">short</td>
-<td>Short</td>
-<td style="text-align:center">16</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">[-2^15, 2^15 - 1]</td>
+<td style="text-align:center">内存是连续的</td>
+<td style="text-align:center">内存不是连续的</td>
+<td style="text-align:center">内存是连续的</td>
+<td style="text-align:center">内存是连续的</td>
 </tr>
 <tr>
-<td style="text-align:center">int</td>
-<td>Integer</td>
-<td style="text-align:center">32</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">[-2^31, 2^31 - 1]</td>
+<td style="text-align:center">支持随机访问</td>
+<td style="text-align:center">不支持随机访问</td>
+<td style="text-align:center">支持随机访问</td>
+<td style="text-align:center">支持随机访问</td>
 </tr>
 <tr>
-<td style="text-align:center">long</td>
-<td>Long</td>
-<td style="text-align:center">64</td>
-<td style="text-align:center">8</td>
-<td style="text-align:center">0L</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">[-2^ 63, 2^63 - 1]</td>
-</tr>
-<tr>
-<td style="text-align:center">float</td>
-<td>Float</td>
-<td style="text-align:center">32</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">0f</td>
-<td style="text-align:center">否</td>
-<td style="text-align:center">1.4E-45 ~ 3.4028235E38</td>
-</tr>
-<tr>
-<td style="text-align:center">double</td>
-<td>Double</td>
-<td style="text-align:center">64</td>
-<td style="text-align:center">8</td>
-<td style="text-align:center">0d</td>
-<td style="text-align:center">否</td>
-<td style="text-align:center">4.9E-324 ~ 1.7976931348623157E308</td>
-</tr>
-<tr>
-<td style="text-align:center">char</td>
-<td>Character</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">‘u0000’</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">0 ~ 65535（2^16 - 1）</td>
-</tr>
-<tr>
-<td style="text-align:center">boolean</td>
-<td>Boolean</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">未明确定义</td>
-<td style="text-align:center">false</td>
-<td style="text-align:center">是</td>
-<td style="text-align:center">true、false</td>
+<td style="text-align:center">线程不安全</td>
+<td style="text-align:center">线程不安全</td>
+<td style="text-align:center">线程安全</td>
+<td style="text-align:center">线程不安全</td>
 </tr>
 </tbody>
 </table>
-<p>Java中，局部变量会被存入Java虚拟机栈中的局部变量表中，未被static修饰的基本数据则被存入Java虚拟机的堆中。而对于包装类，其本质是一个对象，而显而易见，基本上所有对象都被存在堆中。</p>
-<div class="note note-info">
-            <p><strong>为什么说是几乎所有对象实例都存在于堆中呢？</strong> 这是因为 HotSpot 虚拟机引入了 JIT 优化之后，会对对象进行逃逸分析，如果发现某一个对象并没有逃逸到方法外部，那么就可能通过标量替换来实现栈上分配，而避免堆上分配内存 <sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[基础常用面试题总结(上)](https://javaguide.cn/java/basis/java-basic-questions-01.htmlJava)">[1]</span></a></sup></p>
-          </div>
-<h2 id="基础数据包装类的默认缓存">基础数据包装类的默认缓存</h2>
-<p>Java为大部分基础数据的包装类都添加了默认缓存，对于整型系列，都有[-128, 127]的缓存。对于Character则是[0,127]，而对于Boolean则是(True, False)。</p>
-<p>默认缓存的意义在于将一些经常使用的对象优先进行缓存，以便在实际操作时减少由于频繁创建对象带来的性能损耗。</p>
-<p><strong>缓存的实现，从底层代码来看是一目了然的</strong>。这里给一个Integer的例子</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Integer <span class="hljs-title function_">valueOf</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123;<br>    <span class="hljs-keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)<br>        <span class="hljs-keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(i);<br>&#125;<br><br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IntegerCache</span> &#123;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">low</span> <span class="hljs-operator">=</span> -<span class="hljs-number">128</span>;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> high;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Integer cache[];<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        <span class="hljs-comment">// high value may be configured by property</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">h</span> <span class="hljs-operator">=</span> <span class="hljs-number">127</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">integerCacheHighPropValue</span> <span class="hljs-operator">=</span><br>            sun.misc.VM.getSavedProperty(<span class="hljs-string">&quot;java.lang.Integer.IntegerCache.high&quot;</span>);<br>        <span class="hljs-keyword">if</span> (integerCacheHighPropValue != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> parseInt(integerCacheHighPropValue);<br>                i = Math.max(i, <span class="hljs-number">127</span>);<br>                <span class="hljs-comment">// Maximum array size is Integer.MAX_VALUE</span><br>                h = Math.min(i, Integer.MAX_VALUE - (-low) -<span class="hljs-number">1</span>);<br>            &#125; <span class="hljs-keyword">catch</span>( NumberFormatException nfe) &#123;<br>                <span class="hljs-comment">// If the property cannot be parsed into an int, ignore it.</span><br>            &#125;<br>        &#125;<br>        high = h;<br><br>        cache = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>[(high - low) + <span class="hljs-number">1</span>];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> low;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> <span class="hljs-variable">k</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; k &lt; cache.length; k++)<br>            cache[k] = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(j++);<br><br>        <span class="hljs-comment">// range [-128, 127] must be interned (JLS7 5.1.7)</span><br>        <span class="hljs-keyword">assert</span> IntegerCache.high &gt;= <span class="hljs-number">127</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">IntegerCache</span><span class="hljs-params">()</span> &#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>可以看到，<strong><code>...Cache</code>是一个静态类</strong>，内部信息在类加载的时候便会被加载到内存中去（<strong>放进常量池</strong>）。<code>...Cache</code>这个静态类中维护了一个类型为<code>...</code>的数组，并在类加载时便初始化。valueOf()方法通常在装箱的时候调用，因此可以知道，装箱时并不是直接创建一个存储了基本类型的对象，而是先对基本类型进行一个范围判断知乎决定是否创建一个新的对象还是从缓存中获取对象。其他的包装类缓存也是大同小异，不过可以从中看出来，缓存的上限是可以通过JVM参数自定义的：<code>-XX:AutoBoxCacheMax</code>。</p>
-<p>对于浮点数系列则没有设置缓存，个人觉得有如下几个原因：</p>
+<h2 id="ArrayList扩容">ArrayList扩容</h2>
+<p>关于ArrayList的扩容，可以将其分阶段来讲</p>
+<p>创建新ArrayList对象：</p>
+<ul>
+<li>指定了大小：ArrayList大小即为指定大小</li>
+<li>没有指定大小：ArrayList容量初始化为0</li>
+</ul>
+<p>添加元素：</p>
+<ul>
+<li>大小不为0：判断添加元素后ArrayList长度是否超过了capacity。如果超过了：
+<ul>
+<li>扩容后没有超过最大指定容量(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">MIN_ARRAY_SIZE</mtext></mrow><annotation encoding="application/x-tex">\texttt{MIN\_ARRAY\_SIZE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7063em;vertical-align:-0.0951em;"></span><span class="mord text"><span class="mord texttt">MIN_ARRAY_SIZE</span></span></span></span></span>)：<code>capacity = capacity + (capacity &gt;&gt; 1)</code>，基本上就是为原上限的1.5倍</li>
+<li>扩容后超过了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">MIN_ARRAY_SIZE</mtext></mrow><annotation encoding="application/x-tex">\texttt{MIN\_ARRAY\_SIZE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7063em;vertical-align:-0.0951em;"></span><span class="mord text"><span class="mord texttt">MIN_ARRAY_SIZE</span></span></span></span></span>：
+<ul>
+<li>超过了最大容量：<code>capacity = INTEGER.MAX_VALUE</code></li>
+<li>没有超过最大容量：<code>capacity = MIN_ARRAY_SIZE</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>扩容之后，新建一个容量为新<code>capacity</code>的数组，将旧数组内容使用<code>copyof()</code>复制到新数组中，将引用指向新数组的内存地址，释放旧数组。</li>
+</ul>
+<h2 id="CopyOnWriteArrayList">CopyOnWriteArrayList</h2>
+<p><strong>CopyOnWriteArrayList</strong>是一个线程安全的ArrayList，在现实中的运用场景，通常会假设读情况远远大于写情况。</p>
+<p>在该数据结构中引入了一个“写时复制”的理念，其核心非常简单。由于假设了读频率远大于写，所以在出现写的情况时，会生成一个原数组的拷贝，然后写操作只会在这个拷贝上进行修改。在修改结束之后，再将结果覆盖到原数组上。</p>
+<p><strong>除此以外，跟正常ArrayList的差别不大</strong>，<strong>为数不多的差别体现在CopyOnWriteArrayList中没有实现像ArrayList中那样的扩容机制。</strong></p>
+<h1>Map相关</h1>
+<p>Map的核心就是键值对，然后设计了一系列的针对解决高性能键值对操作问题的数据结构。</p>
+<h2 id="HashMap-VS-HashTable">HashMap VS. HashTable</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">HashMap</th>
+<th style="text-align:center">HashTable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">非线程安全</td>
+<td style="text-align:center">线程安全</td>
+</tr>
+<tr>
+<td style="text-align:center">常用类</td>
+<td style="text-align:center">古早版本的产物，少用</td>
+</tr>
+<tr>
+<td style="text-align:center">接受null值</td>
+<td style="text-align:center">不接受null值</td>
+</tr>
+<tr>
+<td style="text-align:center">扩容机制: 2n</td>
+<td style="text-align:center">扩容机制: 2n+1</td>
+</tr>
+<tr>
+<td style="text-align:center">对哈希值进行了高位和低位<br />的混合扰动处理以减少冲突</td>
+<td style="text-align:center">直接使用hashcode()</td>
+</tr>
+<tr>
+<td style="text-align:center">桶大小小时：值为链表<br />桶大小大时：只为红黑树</td>
+<td style="text-align:center">没有动态策略</td>
+</tr>
+</tbody>
+</table>
+<p><strong>扩容机制:</strong></p>
+<p><strong>HashTable:</strong></p>
+<ul>
+<li>没有指定初始值：11</li>
+<li>扩容时： 2n +1</li>
+</ul>
+<p><strong>HashMap:</strong></p>
+<ul>
+<li>没有指定初始值：16</li>
+<li>指定了初始值：取决于初始值扩容到2的幂次方大小</li>
+<li>扩容时：2n</li>
+</ul>
+<h2 id="HashCode相关">HashCode相关</h2>
+<h3 id="经典问题：重写equals-时为什么必须重写hashCode-方法">经典问题：重写equals()时为什么必须重写hashCode()方法?</h3>
+<p>在将类实例添加到Hash相关数据结构中时，有如下步骤：</p>
 <ol>
-<li>浮点是连续的。相较于整型，浮点很难在实际操作中对某一些数进行预缓存，并且经常使用它们。既然无法确保这一点，便无法提升性能。</li>
-<li>浮点本身便有精度问题。</li>
+<li>计算该实例对应的hashCode()，同时计算其他已添加到数据结构中对象的hashCode</li>
+<li>如果没有相同hashCode，程序会认为没有相同对象被添加进结构中，否则调用equals方法来判断两个对象是否相同</li>
+<li>根据结果，判断是否成功添加了对象</li>
 </ol>
-<h2 id="装箱与拆箱">装箱与拆箱</h2>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Integer</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>; <span class="hljs-comment">// 装箱</span><br><span class="hljs-type">int</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> a; <span class="hljs-comment">// 拆箱</span><br></code></pre></td></tr></table></figure>
-<p><strong>装箱：</strong> 调用包装类的valueOf()方法 （<code>Integer a = Integer.valueOf(10);</code>），因此在装箱时会判断对应值是否在缓存范围内，来决定是否直接返回缓存内容。</p>
-<p><strong>拆箱：</strong> 调用xxxValue()方法 (<code>int b = a.intValue();</code>)。</p>
-<h2 id="浮点数精度问题">浮点数精度问题</h2>
-<p>其实很好理解，计算机来理解一个数，总是会有一个用于存储数据的字节量，而这个字节量一定是有限的，所以只能够存储一定位数的数据。作为浮点数（小数），我们都知道，我们无法确保其一定会是有限位数的小数，比如说无限循环小数，无理数等等。这些书无法用限定的字节量来精确表达，只能够到让它们到了一定小数点后位数之后将其截断，这也就是造成了浮点数的精度问题的其中之一。</p>
-<p>我个人认为这么回答也没有问题，但是浮点数精度问题也是由于用于表示浮点数的二进制标准带来的问题。对于float来说，字节位数为32，细节分下来：第一位为符号位，2-9是指数位，10-32是尾数位。(double则是1为符号位，2-12是指数位，13-64是尾数位)。理论上而言，足够长的位数能够将浮点数的精度误差近似为0，但是终究会有表示能力的问题，这会让一些十进制的小数在表示二进制时是无限循环小数。</p>
-<h3 id="如何解决精度问题">如何解决精度问题</h3>
-<p><strong>考虑浮点数本身：</strong> 可以使用<code>BigDecimal</code>类来解决精度问题</p>
-<p><strong>考虑浮点数之间的大小关系问题</strong> ： 可以为浮点数之间设一个误差空间来消除精度带来的问题。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">float</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">2.0f</span> - <span class="hljs-number">1.9f</span>;<br><span class="hljs-type">float</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.8f</span> - <span class="hljs-number">1.7f</span>;<br>System.out.println(a == b); <span class="hljs-comment">// false</span><br>System.out.println(Math.abs(a  - b) &lt; <span class="hljs-number">0.00001f</span>); <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+<p>由以上可以看出来，在某些情况下，equals和hashCode都被用来检测两个对象是否相等，如果没有重写hashCode方法，也许会发生以下问题：</p>
+<ul>
+<li>两个不同的对象由极大可能性拥有相同的hashCode，这违背了java的equals与hashcode的契约（即对象A与对象Bequals  -&gt; 对象A的hashcode与对象B的hashcode相同）</li>
+<li>添加对象到结构中时，equals为true的两个对象也许hashcode不相同，这导致两个本应放在相近或者同一个桶中的对象被分在了不同的桶中</li>
+<li>在结构中查找对象时，无法精确定位到目标对象，导致潜在的错误的查询失败问题</li>
+</ul>
+<h2 id="LinkedHashMap">LinkedHashMap</h2>
+<p>其本质就是为每一个键值添加了一个双向链表节点的特性，让他们多了一个next指针和一个prev指针。</p>
+<p>由于依然保留了HashMap的特性，LinkedHashMap在桶大小到了一定阈值时便将内部结构变为红黑树。因此，可以延伸出一个问题：这里的红黑树节点与HashMap的红黑树节点是一样的吗？</p>
+<p><strong>答案是一样的</strong>，HashMap中的TreeNode继承了有双向链表特性的Entry。这让它们有着Entry的特性的同时，也拥有TreeNode的特性。只是在HashMap中并不会用到Entry的特性。Java的设计者应该是为了统一节点风格而这么做的。但是这样做，似乎会让TreeNode多了两个没有用的引用指针，导致资源浪费。关于这一点，听听Java设计者怎么说的：</p>
+<div class="note note-info">
+            <p>Because TreeNodes are about twice the size of regular nodes, weuse them only when bins contain enough nodes to warrant use(see TREEIFY_THRESHOLD). And when they become too small (due toremoval or resizing) they are converted back to plain bins.  Inusages with well-distributed user hashCodes, tree bins arerarely used.  Ideally, under random hashCodes, the frequency ofnodes in bins follows a Poisson distribution</p>
+          </div>
+<p>大意就是HashMap中的键值被转化为红黑树的可能性比较低。就算转为红黑树变为树节点，也可能会因为移除或者扩容将 <code>TreeNode</code> 变为 <code>Node</code>，所以 <code>TreeNode</code> 的使用概率不算很大，对于这一点资源空间的浪费是可以接受的。<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[LinkedHashMap 源码分析](https://javaguide.cn/java/collection/linkedhashmap-source-code.html)">[1]</span></a></sup></p>
+<h2 id="ConcurrentHashMap">ConcurrentHashMap</h2>
+<p>顾名思义，是一个线程安全的HashMap。这个类被分为两个时期进行讨论</p>
+<h3 id="Java-8-以前">Java 8 以前</h3>
+<p>采用了Segment + HashMap的方式，将HashMap数据分为多个Segment,每一个Segment中都维护着一个类似于HashMap的结构。每一个Segment中都分配了一把锁，以保证在对某一个Segment中的内容进行操作时，不会让其他Segment中的内容的读写造成影响。</p>
+<p>这里的Segment继承了ReentrantLock，所以每一个Segment本身也就是一个可重入锁。在1.8以前，ConcurrentHashMap维护的是一个Segment数组，其大小在初始化之后便无法改变，也就是说，假设初始化大小为n，则意味着最高可支持n个线程并行操作。然而，默认n = 16。</p>
+<h3 id="Java-8之后">Java 8之后</h3>
+<p>摒弃了Segment，采取了Node + CAS / Synchronized 来实现线程安全。当然，这里的Node取决于键值形式，也许是双向链表Node，也也许是TreeNode。</p>
+<p>新的ConcurrentHashMap大量使用了CAS机制来进行读写操作，但是在某些情况下依然会使用Synchronized来保证线程安全。比如说，当一个桶的大小（冲突量）超过阈值，需要将键值结构转为红黑树时，ConcurrentHashMap会使用Synchronized将该key中的内容锁住，以保证数据完整性和安全性。</p>
 <h1>引用</h1>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.htmlJava">基础常用面试题总结(上)</a>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/collection/linkedhashmap-source-code.html">LinkedHashMap 源码分析</a>
 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
@@ -451,7 +499,25 @@
       
         <a href="/tags/Java/" class="print-no-link">#Java</a>
       
-        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="print-no-link">#数据类型</a>
+        <a href="/tags/%E9%9B%86%E5%90%88%E7%B1%BB/" class="print-no-link">#集合类</a>
+      
+        <a href="/tags/ArrayList/" class="print-no-link">#ArrayList</a>
+      
+        <a href="/tags/LinkedList/" class="print-no-link">#LinkedList</a>
+      
+        <a href="/tags/Queue/" class="print-no-link">#Queue</a>
+      
+        <a href="/tags/HashMap/" class="print-no-link">#HashMap</a>
+      
+        <a href="/tags/HashTable/" class="print-no-link">#HashTable</a>
+      
+        <a href="/tags/ConcurrentHashMap/" class="print-no-link">#ConcurrentHashMap</a>
+      
+        <a href="/tags/Vector/" class="print-no-link">#Vector</a>
+      
+        <a href="/tags/Array/" class="print-no-link">#Array</a>
+      
+        <a href="/tags/HashSet/" class="print-no-link">#HashSet</a>
       
     </div>
   
@@ -463,8 +529,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java学习 - 基本数据类型</div>
-      <div>http://example.com/2024/12/03/Java学习 - 基本数据类型/</div>
+      <div>Java学习 - 集合类</div>
+      <div>http://example.com/2024/12/03/Java学习/Java学习 - 集合类/</div>
     </div>
     <div class="license-meta">
       
@@ -508,9 +574,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/12/03/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9B%86%E5%90%88%E7%B1%BB/" title="Java学习 - 集合类">
+                      <a href="/2024/12/04/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E8%BF%9B%E7%A8%8B%EF%BC%8C%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%8D%8F%E7%A8%8B/" title="Java学习 - 进程，线程，协程">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java学习 - 集合类</span>
+                        <span class="hidden-mobile">Java学习 - 进程，线程，协程</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -518,8 +584,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
-                        <span class="hidden-mobile">Java学习 - 面向对象</span>
+                      <a href="/2024/12/03/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="Java学习 - 基本数据类型">
+                        <span class="hidden-mobile">Java学习 - 基本数据类型</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -576,6 +642,11 @@
 
 
   
+
+
+  
+  
+
 
 
 
