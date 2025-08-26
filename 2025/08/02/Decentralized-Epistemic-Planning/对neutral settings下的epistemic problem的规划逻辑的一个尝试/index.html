@@ -27,7 +27,7 @@
 <meta property="og:description" content="Policy 决策的基础解决方案 现在，基本的解决方案流程如下： graph LR  a[基于agent自身对ontic world的认知，生成所有可能的virtual world] --&gt; b[使用BFS，Centralized地模拟每一个virtual world，并在完成任务时返回action sequence的第一个元素]  b --&gt; c[统计所有virtual world的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-08-02T03:25:17.000Z">
-<meta property="article:modified_time" content="2025-08-07T06:08:04.866Z">
+<meta property="article:modified_time" content="2025-08-13T08:58:27.306Z">
 <meta property="article:author" content="Clain Chen">
 <meta property="article:tag" content="DEL">
 <meta property="article:tag" content="Epistemic Planning">
@@ -75,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":6,"anchorLink":true,"anchorLinkSymbol":"#","achorLinkSpace":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -449,9 +449,9 @@ b --&gt; c[基于epistemic world，找到所有可能且合理的ontic world]
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/08/09/Decentralized-Epistemic-Planning/%E4%BB%A3%E7%90%86%E5%9C%A8neutral%20settings%E4%B8%8B%E5%A6%82%E4%BD%95%E6%8E%A8%E6%B5%8B%E5%85%B6%E4%BB%96%E4%BB%A3%E7%90%86%E7%9A%84goals/" title="代理在neutral settings下如何推测其他代理的goals">
+                      <a href="/2025/08/04/Fluid%E4%B8%BB%E9%A2%98%E4%B8%8B%EF%BC%8C%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95%E7%9A%84%E4%B8%80%E7%BA%A7%E6%A0%87%E9%A2%98%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84bug/" title="Fluid主题下，如何解决文章目录的一级标题无法跳转的bug">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">代理在neutral settings下如何推测其他代理的goals</span>
+                        <span class="hidden-mobile">Fluid主题下，如何解决文章目录的一级标题无法跳转的bug</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -683,6 +683,28 @@ b --&gt; c[基于epistemic world，找到所有可能且合理的ontic world]
       includeTitleTags: true,
       headingsOffset  : -boardTop,
     }, CONFIG.toc));
+
+    // 最佳方案：找到对应的标题元素并获取其真实ID
+    setTimeout(function() {
+      jQuery('#toc-body a[href="#"]').each(function() {
+        var $link = jQuery(this);
+        var linkText = $link.text().trim();
+        
+        // 找到文本内容匹配的标题元素
+        var $matchingHeader = jQuery('.markdown-body h1').filter(function() {
+          return jQuery(this).text().trim() === linkText;
+        }).first();
+        
+        if ($matchingHeader.length > 0) {
+          var headerId = $matchingHeader.attr('id');
+          headerID = headerId.trim().toLowerCase().replace(/[s]+/g, '-');
+          if (headerId) {
+            $link.attr('href', '#' + headerId);
+          }
+        }
+      });
+    }, 300); // 给tocbot更多时间完成渲染
+
     if (toc.find('.toc-list-item').length > 0) {
       toc.css('visibility', 'visible');
     }
