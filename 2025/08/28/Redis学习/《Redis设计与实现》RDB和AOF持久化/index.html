@@ -1,0 +1,903 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Clain Chen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="RDB持久化 Redis是一个内存数据库，数据都被保存在内存中。因此如果没有一个合适的方法将数据保存到磁盘中的话，服务器进程的任何可能的退出或崩溃都会导致内部数据全部丢失。因此需要一个方法将数据库中的内容保存到磁盘中。而Redis便是使用了RDB持久化的方式将数据保存在磁盘中，以供服务器的保存与还原。 RDB文件是一个经过压缩的二进制文件。 RDB文件的创建与载入 两个命令可以用于生成RDB文件：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Redis设计与实现》RDB和AOF持久化">
+<meta property="og:url" content="http://example.com/2025/08/28/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8BRDB%E5%92%8CAOF%E6%8C%81%E4%B9%85%E5%8C%96/index.html">
+<meta property="og:site_name" content="Clain的小屋">
+<meta property="og:description" content="RDB持久化 Redis是一个内存数据库，数据都被保存在内存中。因此如果没有一个合适的方法将数据保存到磁盘中的话，服务器进程的任何可能的退出或崩溃都会导致内部数据全部丢失。因此需要一个方法将数据库中的内容保存到磁盘中。而Redis便是使用了RDB持久化的方式将数据保存在磁盘中，以供服务器的保存与还原。 RDB文件是一个经过压缩的二进制文件。 RDB文件的创建与载入 两个命令可以用于生成RDB文件：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/RDB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.png">
+<meta property="article:published_time" content="2025-08-28T05:52:05.000Z">
+<meta property="article:modified_time" content="2025-08-28T10:01:22.186Z">
+<meta property="article:author" content="Clain Chen">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/RDB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.png">
+  
+  
+  
+  <title>《Redis设计与实现》RDB和AOF持久化 - Clain的小屋</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"anchorLink":true,"anchorLinkSymbol":"#","achorLinkSpace":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Clain的小屋</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《Redis设计与实现》RDB和AOF持久化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-28 15:52" pubdate>
+          2025年8月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《Redis设计与实现》RDB和AOF持久化</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2025年8月28日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1>RDB持久化</h1>
+<p>Redis是一个内存数据库，数据都被保存在内存中。因此如果没有一个合适的方法将数据保存到磁盘中的话，服务器进程的任何可能的退出或崩溃都会导致内部数据全部丢失。因此需要一个方法将数据库中的内容保存到磁盘中。而Redis便是使用了RDB持久化的方式将数据保存在磁盘中，以供服务器的保存与还原。</p>
+<p><strong>RDB文件是一个经过压缩的二进制文件。</strong></p>
+<h2 id="RDB文件的创建与载入">RDB文件的创建与载入</h2>
+<p>两个命令可以用于生成RDB文件：<code>SAVE</code>和<code>BGSAVE</code>。实际上顾名思义</p>
+<ul>
+<li><code>SAVE</code>：保存数据库数据的时候会阻塞Redis服务器进程
+<ul>
+<li>底层逻辑中，该命令不会<code>fork</code>一个子进程。</li>
+</ul>
+</li>
+<li><code>BGSAVE</code>：Backgroud Save，可以看出在这个命令下Redis会用一个后台程序来保存数据库数据。实际上就是Redis会派生一个子进程，由子进程负责创建RDB文件。
+<ul>
+<li>底层逻辑中，该命令会首先<code>fork</code>一个子进程。</li>
+<li>由这一点可以看出，Redis并不是一个纯粹的单线程程序，它实际上的单线程是针对于数据库数据执行的任务流程。也就是说，在操作数据的层面上来说，Redis是一个纯粹的单线程，因此不需要担心数据一致性和死锁的问题。</li>
+</ul>
+</li>
+</ul>
+<p>服务器数据库的备份日志有两种<code>RDB</code>和<code>AOF</code>，充当这两个日志备份的指令有<code>SAVE, BGSAVE, BGREWRITEAOF</code>，它们三个在Redis服务器中同一时间只能执行一个，不允许任何的同时执行。</p>
+<ul>
+<li><code>SAVE</code>与<code>BGSAVE</code>：任意一个的执行期间，客户端发送的另一个指令都会被服务器拒绝。两个相同的<code>SAVE</code>和<code>BGSAVE</code>指令也是不允许的。因为他们可能会产生竞争条件。</li>
+<li><code>SAVE, BGSAVE</code>与<code>BGREWRITEAOF</code>：<code>SAVE, BGSAVE</code>指令运行过程中，客户端发送的<code>BGREWRITEAOF</code>指令会在<code>SAVE, BGSAVE</code>指令执行完毕后执行。而<code>BGREWRITEAOF</code>指令执行过程中，客户端发送的<code>SAVE, BGSAVE</code>指令会直接被服务器拒绝。
+<ul>
+<li>虽然这两组指令同步执行并不会出现竞争状态，但是处于性能考虑，同时执行会导致大量的磁盘IO，这并不是一个好的设计。</li>
+</ul>
+</li>
+</ul>
+<p><strong>载入：</strong> Redis服务器在启动的时候就会自动载入RDB文件（前提是找到了RDB文件）。不过需要<strong>注意</strong>：</p>
+<ul>
+<li>如果服务器开启了AOF持久化功能，则服务器会优先使用AOF文件来还原数据库状态。</li>
+<li>只有AOF持久化功能被关闭的时候，服务器才会使用RDB文件来还原数据库状态。</li>
+<li>服务器载入RDB文件期间，会一直处于阻塞状态，直到载入完毕。</li>
+</ul>
+<h2 id="自动间隔性保存">自动间隔性保存</h2>
+<p>与<code>SAVE</code>不同，由于<code>BGSAVE</code>是一个不会让服务器主进程阻塞的指令，它可以做自动执行的操作。用户可以通过设置服务器配置的<code>save</code>选项，让服务器每个一段时间自动执行一次<code>BGSAVE</code>。例：<code>save [time] [changes]</code>，意为在<code>[time]</code>秒之内，对数据库进行了至少<code>[changes]</code>次修改，<code>BGSAVE</code>便会自动执行。用户可以定义多个<code>save</code>选项，只要任意一个满足了条件，便会执行<code>BGSAVE</code>。</p>
+<ul>
+<li>当用户没有手动设置保存条件时，服务器则会为<code>save</code>选项设置默认条件</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs tex">save 900 1 // 900秒内有1次数据库修改<br>save 300 10 // 300秒内有10次数据库修改<br>save 60 10000 // 60秒内有10000次数据库修改<br></code></pre></td></tr></table></figure>
+<p>书中还记录了具体底层代码的结构，这里不做详细赘述。</p>
+<p>既然Redis服务器允许这类操作存在，那么必然也需要一些属性用于监视这些数据。针对这个问题，Redis中具有<code>dirty</code>计数器和<code>lastsave</code>属性：</p>
+<ul>
+<li><code>dirty</code>计数器：用于记录自上一次<code>SAVE, BGSAVE</code>命令之后，服务器对数据库状态（所有数据库）进行了多少次修改。这里有一点要<strong>注意</strong> ：
+<ul>
+<li><code>SET message ...</code>会让<code>dirty</code>计数器加<code>1</code></li>
+<li><code>SADD database value1 value2 value3 ... valueN</code>会让<code>dirty</code>计数器加<code>N</code></li>
+<li>因此在创建有多组数据的类时（集合，列表，哈希，有序集合），<code>dirty</code>计数器增加的量为数据量。</li>
+</ul>
+</li>
+</ul>
+<p>Redis的服务器周期性操作函数<code>serverCron</code>默认每个<code>100</code>毫秒就会执行一次，而<code>BGSAVE</code>的自动执行也是在这个函数中进行判断。</p>
+<h2 id="RDB文件结构">RDB文件结构</h2>
+<p><img src="/images/RDB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.png" srcset="/img/loading.gif" lazyload alt="RDB文件结构"></p>
+<ul>
+<li>RDB文件是一个二进制数据，因此文件中所有看起来像字符串的内容都不会以<code>\0</code>结尾。</li>
+<li><code>REDIS</code>：由这五个字符组成的，类似于一个文件标识，用于快速识别该文件是一个RDB文件。</li>
+<li><code>db_version</code>：一个四字节的字符串，用于表示该文件的版本号。<strong>现在似乎最新版本是<code>0009</code>，代表第九版RDB文件结构。</strong></li>
+<li><code>databases</code>：包含零个或任意多个数据库。以及数据库中的键值对数据。</li>
+<li><code>EOF</code>：一个一字节的常量，用于标志RDB文件正文部分结束。</li>
+<li><code>check_sum</code>：一个八字节长的无符号整数，保存这一个校验和。这个校验和是通过前四个部分的内容进行计算得出。在载入文件时，会根据该值与使用前四个部分再进行计算的值进行对比，判断该文件是否出错或损坏。</li>
+</ul>
+<p>书中详细讲了<code>database</code>的组成，我这里用一个树结构直观地描述一下整体结构：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-variable constant_">SELECTDB</span><br>db_number<br><span class="hljs-attr">key_value_pairs</span>:<br>	- [<span class="hljs-variable constant_">EXPIRETIME_MS</span>]<br>	- [ms]<br>	- <span class="hljs-variable constant_">TYPE</span><br>    - key<br>    - value<br>    	- <span class="hljs-variable constant_">ENCODING</span><br>		- <span class="hljs-title function_">VALUE</span>(S)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>
+<p><code>SELECTDB</code>：一字节，代表下一个部分是数据库号码</p>
+</li>
+<li>
+<p><code>db_number</code>：一、二或五字节，代表数据库号码。程序读取时会根据这个号码读入指定的数据库中。</p>
+</li>
+<li>
+<p><code>key_value_pairs</code>：</p>
+<ul>
+<li>
+<p><code>EXPIRETIME_MS, ms</code>：当该键被设有过期时间时才会存在。<code>EXPIRETIME_MS</code>常量长度为一字节，即充当了一个具有过期时间的键的标识，由告诉程序下一个要读入的是一个以毫秒为单位的过期时间<code>ms</code></p>
+</li>
+<li>
+<p><code>TYPE</code>：<code>value</code>的类型。长度为一字节，此为众多常量的其中一个:</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs tex">REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>STRING<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>LIST<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>SET<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>ZSET<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>HASH<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>LIST<span class="hljs-built_in">_</span>ZIPLIST<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>SET<span class="hljs-built_in">_</span>INTSET<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>ZSET<span class="hljs-built_in">_</span>ZIPLIST<br>REDIS<span class="hljs-built_in">_</span>RDB<span class="hljs-built_in">_</span>TYPE<span class="hljs-built_in">_</span>HASH<span class="hljs-built_in">_</span>ZIPLIST<br><span class="hljs-params">#</span> 总而言之，就是在对象那一篇文章中讲到过的所有对象的encoding<br></code></pre></td></tr></table></figure>
+</li>
+<li>
+<p>根据不同的<code>TYPE</code>，<code>value</code>也不一样</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>key</code>：该键值对的键，总是一个字符串对象</p>
+</li>
+<li>
+<p><code>value</code>：该键值对的值。这东西名堂多了，取决于<code>TYPE</code>的值。不过都很符合直觉。每一个都展开细讲有点没必要，想要仔细了解的可以去翻书看看，或者去这个网页：<a target="_blank" rel="noopener" href="https://book-redis-design.netlify.app/#/">《Redis设计与实现》</a>。这个实际上就是那本书的内容了，不过书中有些东西版本比较老。</p>
+</li>
+</ul>
+<p>书中的下一个部分介绍了RDB文件的解析，不过这个不是很重要。想看的可以自行去看看。不过这里推荐大家可以先去自己尝试一下创一个Redis服务器，往里面放一两个简单的数据，然后用<code>od -c dump.rdb</code>看一下文件里的内容。结合之前的知识，看看能不能看懂这个文件信息。</p>
+<p><strong>注意：</strong> 生成RDB文件时默认名称是<code>dump.rdb</code></p>
+<h1>AOF持久化</h1>
+<p>与RDB文件担任的职责不同，AOF文件仅用于记录服务器所执行的<strong>写</strong>命令来记录数据库状态。</p>
+<p>这里引用书中一个非常直观且简单的例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Redis服务器指令</span><br>redis&gt; SET msg <span class="hljs-string">&quot;hello&quot;</span><br>OK<br><br>redis&gt; SADD fruits <span class="hljs-string">&quot;apple&quot;</span> <span class="hljs-string">&quot;banana&quot;</span> <span class="hljs-string">&quot;cherry&quot;</span><br>(<span class="hljs-built_in">integer</span>) 3<br><br>redis&gt; RPUSH numbsers 128 256 512<br>(<span class="hljs-built_in">integer</span>) 3<br></code></pre></td></tr></table></figure>
+<p>在执行完这些命令之后，AOF文件中应该记录这些内容：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs tex">*2<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>6<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nSELECT</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>1<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span>0<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><br>*3<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>3<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nSET</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>3<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nmsg</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nhello</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><br>*5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>4<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nSADD</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>6<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nfruits</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\napple</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>6<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nbanana</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>6<span class="hljs-keyword">\r</span><span class="hljs-keyword">\ncherry</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><br>*5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nRPUSH</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>7<span class="hljs-keyword">\r</span><span class="hljs-keyword">\nnumbers</span><span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>3<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span>128<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>3<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span>256<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><span class="hljs-built_in">$</span>5<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span>512<span class="hljs-keyword">\r</span><span class="hljs-keyword">\n</span><br></code></pre></td></tr></table></figure>
+<p><strong>简单的提示：</strong> 把每一个<code>\r\n</code>都看成是分隔符</p>
+<p><strong>这些命令的追加，一言以蔽之，就是每当客户端向服务器发送一个写命令，服务器就会将协议内容追加到<code>aof_buf</code>缓冲区的末尾。</strong></p>
+<h2 id="AOF文件的写入与同步">AOF文件的写入与同步</h2>
+<p>如在前几个章节或文章中说过，Redis服务器进程就是一个事件循环。而在每一次循环结束之前，都会调用<code>flushAppendOnlyFile</code>函数，考虑是否要将<code>aof_buf</code>缓冲区的内容写入和保存到AOF文件中。而这个函数的行为取决于服务器配置的<code>appendfsync</code>选项:</p>
+<ul>
+<li><code>always</code>：将 <code>aof_buf</code> 缓冲区中的所有内容写入并同步<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="现代操作系统中的写入与同步时两个东西。前者代表的是将内容写入到一个内存缓冲区中，后者才是真正地将内容刷到磁盘里。刷到磁盘（同步）的时机有很多种，当缓冲区被填满，超过了指定时限，人工强行同步等等。">[1]</span></a></sup>到 AOF 文件。
+<ul>
+<li>最慢，但最安全。即便是故障停机，也只会丢失一个循环的AOF信息</li>
+</ul>
+</li>
+<li><code>everysec</code>（默认值）：将 <code>aof_buf</code> 缓冲区中的所有内容写入到 AOF 文件， 如果上次同步 AOF 文件的时间距离现在超过一秒钟， 那么再次对 AOF 文件进行同步， 并且这个同步操作是由一个线程专门负责执行的。
+<ul>
+<li>折中的做法。故障停机也只会丢失一秒钟的AOF信息</li>
+</ul>
+</li>
+<li><code>no</code>：将 <code>aof_buf</code> 缓冲区中的所有内容写入到 AOF 文件， 但并不对 AOF 文件进行同步， 何时同步由操作系统来决定。
+<ul>
+<li>写入速度最快，但同步时间最长，并且最有可能丢失大量AOF数据。总的来说，听天由命。</li>
+</ul>
+</li>
+</ul>
+<h2 id="AOF文件的载入与数据还原">AOF文件的载入与数据还原</h2>
+<p>AOF文件的载入与数据还原其实也是一个非常直观且易懂的流程：</p>
+<ol>
+<li>创建一个不带网络连接的伪客户端
+<ul>
+<li>为什么？因为现在要操作的AOF文件，而不是真实的新命令</li>
+</ul>
+</li>
+<li>从AOF文件中分析并读取一条写命令</li>
+<li>使用为客户端执行被读出的写命令</li>
+<li>反复执行2,3，知道AOF文件中所有写命令都被处理完毕为止</li>
+</ol>
+<p>那么可能会有几个问题：</p>
+<ul>
+<li>开启新Redis服务器的时候，内部应是没有任何数据存在的。那假设之前这个服务器开了很久，AOF文件很大的话，这样子做是否高效？
+<ul>
+<li>经过AOF重写机制，能极大程度地缩小AOF文件的大小，同时也会简化还原数据时所需要的执行次数。</li>
+</ul>
+</li>
+</ul>
+<h2 id="AOF文件重写">AOF文件重写</h2>
+<p><strong>AOF文件重写的主要目的是为了删除冗余命令，合并命令以缩小AOF文件和简化数据还原时的程序复杂度。</strong></p>
+<p>基本操作方式是创建一个新的AOF文件，往里面写入内容以代替旧的AOF文件。</p>
+<p>不过虽然这么说，但是实际上AOF文件的重写并不会对AOF文件本身进行任何读操作，而是通过检查当前数据库中的键值对，用<code>SET</code>等一句写命令，替代所有之前记录这个键值的多条命令。比如说：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">RPUSH list <span class="hljs-string">&quot;A&quot;</span> <span class="hljs-string">&quot;B&quot;</span>  // [<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>]<br>RPUSH list <span class="hljs-string">&quot;C&quot;</span>      // [<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>]<br>RPUSH list <span class="hljs-string">&quot;D&quot;</span> <span class="hljs-string">&quot;E&quot;</span>  // [<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>, <span class="hljs-string">&quot;D&quot;</span>, <span class="hljs-string">&quot;E&quot;</span>]<br>LPOP list<br>LPOP list<br>RPUSH list <span class="hljs-string">&quot;F&quot;</span> <span class="hljs-string">&quot;G&quot;</span>  // [<span class="hljs-string">&quot;C&quot;</span>, <span class="hljs-string">&quot;D&quot;</span>, <span class="hljs-string">&quot;E&quot;</span>, <span class="hljs-string">&quot;F&quot;</span>, <span class="hljs-string">&quot;G&quot;</span>]<br></code></pre></td></tr></table></figure>
+<p>用正常的AOF文件写入逻辑，文件中将会有6个不同的，对同一个键值的写入命令。而通过使用AOF文件重写，将直接从数据库中读取键<code>list</code>的值，然后生成一条<code>RPUSH list &quot;C&quot; &quot;D&quot; &quot;E&quot; &quot;F&quot; &quot;G&quot;</code>来代替这六条写入命令。这一点，对任何类型的键都有效。</p>
+<p><strong>由于AOF文件与RDB文件所扮演的基本角色是一样的，目的都是要还原服务器数据库的数据，因此它完全可以将内部的指令全部简化为像<code>SET, RPUSH, SADD</code>这类简单的写入命令。</strong> 不过，它同样也会设置生成键过期时间的指令。</p>
+<p><strong>注意：</strong> Redis也考虑了缓冲区溢出的问题。因此，在处理列表，哈希表，集合，有序集合这四种可能会带有多个元素的键时，会先检查键所含元素的数量，基于<code>redis.h/REDIS_AOF_REWRITE_ITEMS_PER_CMD</code>常量来决定是否要对同一个键进行多次命令。在目前版本中，这个常量为<code>64</code>。</p>
+<h3 id="AOF后台重写">AOF后台重写</h3>
+<p>写入操作通常会占用大量服务器的IO以造成服务器卡顿一类的性能问题。因此AOF的重写操作都是在Redis程序的子进程中执行。这便是<code>BGREWRITEAOF</code>命令。然而，也许在后台重写的过程中，主进程还在对数据库进行操作，因此Redis还需要处理这种情况下的<strong>数据不一致问题</strong>。</p>
+<p>实际上解决方法也很简单，在开始执行AOF后台重写命令时，主进程（Redis服务器）会开启一个<strong>AOF重写缓冲区</strong>。该缓冲区所扮演的角色与<strong>AOF缓冲区</strong>相似，在Redis服务器执行完一个写命令之后，不光会将这个写命令发送给AOF缓冲区，还会发送给AOF重写缓冲区。这样一来，子进程中的AOF重写过程中也能够保证同步Redis服务器在这期间的新的写命令。</p>
+<p>在子进程完成任务后，会向父进程发送一个信号，父进程收到信号后，执行以下操作：</p>
+<ul>
+<li>AOF重写缓冲区的内容写入到新的AOF文件中，以保证新AOF文件中的数据库状态与当前服务器的数据库状态一致</li>
+<li>对新的AOF文件进行改名，并<strong>原子性地</strong>覆盖现有AOF文件，完成替换</li>
+</ul>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>现代操作系统中的写入与同步时两个东西。前者代表的是将内容写入到一个内存缓冲区中，后者才是真正地将内容刷到磁盘里。刷到磁盘（同步）的时机有很多种，当缓冲区被填满，超过了指定时限，人工强行同步等等。
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Redis%E5%AD%A6%E4%B9%A0/" class="category-chain-item">Redis学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/" class="print-no-link">#Redis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《Redis设计与实现》RDB和AOF持久化</div>
+      <div>http://example.com/2025/08/28/Redis学习/《Redis设计与实现》RDB和AOF持久化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Clain Chen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/27/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" title="《Redis设计与实现》数据库">
+                        <span class="hidden-mobile">《Redis设计与实现》数据库</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+
+    // 最佳方案：找到对应的标题元素并获取其真实ID
+    setTimeout(function() {
+      jQuery('#toc-body a[href="#"]').each(function() {
+        var $link = jQuery(this);
+        var linkText = $link.text().trim();
+        
+        // 找到文本内容匹配的标题元素
+        var $matchingHeader = jQuery('.markdown-body h1').filter(function() {
+          return jQuery(this).text().trim() === linkText;
+        }).first();
+        
+        if ($matchingHeader.length > 0) {
+          var headerId = $matchingHeader.attr('id');
+          headerID = headerId.trim().toLowerCase().replace(/[s]+/g, '-');
+          if (headerId) {
+            $link.attr('href', '#' + headerId);
+          }
+        }
+      });
+    }, 300); // 给tocbot更多时间完成渲染
+
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
