@@ -1,0 +1,981 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Clain Chen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="主从复制 用户可以通过执行SLAVEOF命令或者设置slaveof选项，来让一个服务器去复制另一个服务器。此时，我们称被复制的服务器为主服务器，复制其他服务器的服务器为从服务器。比如，两个服务器地址分别为127.0.0.1:6379和127.0.0.1:12345，如果用户在服务器127.0.0.1:12345中发送命令： 12127.0.0.1:12345&gt; SLAVEOF 127.0.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Redis设计与实现》主从复制">
+<meta property="og:url" content="http://example.com/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/index.html">
+<meta property="og:site_name" content="Clain的小屋">
+<meta property="og:description" content="主从复制 用户可以通过执行SLAVEOF命令或者设置slaveof选项，来让一个服务器去复制另一个服务器。此时，我们称被复制的服务器为主服务器，复制其他服务器的服务器为从服务器。比如，两个服务器地址分别为127.0.0.1:6379和127.0.0.1:12345，如果用户在服务器127.0.0.1:12345中发送命令： 12127.0.0.1:12345&gt; SLAVEOF 127.0.0">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/%E6%97%A7%E7%89%88%E4%B8%BB%E4%BB%8E%E6%96%AD%E7%BA%BF%E9%87%8D%E8%BF%9E%E5%A4%8D%E5%88%B6%E7%9A%84%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2025-08-29T04:12:05.000Z">
+<meta property="article:modified_time" content="2025-08-29T11:50:27.549Z">
+<meta property="article:author" content="Clain Chen">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/%E6%97%A7%E7%89%88%E4%B8%BB%E4%BB%8E%E6%96%AD%E7%BA%BF%E9%87%8D%E8%BF%9E%E5%A4%8D%E5%88%B6%E7%9A%84%E6%B5%81%E7%A8%8B.png">
+  
+  
+  
+  <title>《Redis设计与实现》主从复制 - Clain的小屋</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"anchorLink":true,"anchorLinkSymbol":"#","achorLinkSpace":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Clain的小屋</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《Redis设计与实现》主从复制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-29 14:12" pubdate>
+          2025年8月29日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《Redis设计与实现》主从复制</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2025年8月29日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1>主从复制</h1>
+<p>用户可以通过执行<code>SLAVEOF</code>命令或者设置<code>slaveof</code>选项，来让一个服务器去复制另一个服务器。此时，我们称被复制的服务器为主服务器，复制其他服务器的服务器为从服务器。比如，两个服务器地址分别为<code>127.0.0.1:6379</code>和<code>127.0.0.1:12345</code>，如果用户在服务器<code>127.0.0.1:12345</code>中发送命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmd"><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">12345</span>&gt; SLAVEOF <span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span> <span class="hljs-number">6379</span><br>OK<br></code></pre></td></tr></table></figure>
+<p>那么服务器<code>127.0.0.1:12345</code>将成为<code>127.0.0.1&quot;6379</code>的从服务器。在此之后，主从服务器中将保存相同的数据。</p>
+<h1>旧版复制功能</h1>
+<p>在发出<code>SLAVEOF</code>指令之后，从服务器首先需要执行同步操作。具体流程如下</p>
+<pre><code class=" mermaid">sequenceDiagram
+	participant B as 从服务器
+	participant A as 主服务器
+	participant SubA as BGSAVE子进程
+	participant C as 客户端（用户）
+    B -&gt;&gt; A: 发送Sync命令
+    A -&gt;&gt; SubA: 执行BGSAVE命令
+    Note right of A: 生成RDB快照文件
+    C --&gt;&gt; A: 新的写入命令
+    A --&gt;&gt; A: 将写入命令记录到缓冲区
+    destroy SubA
+    SubA -&gt;&gt; A: BGSAVE命令执行完毕
+    A -&gt;&gt; B: 发送RDB文件
+    B -&gt;&gt; B: 接受并载入RDB文件
+    A -&gt;&gt; B: 发送缓冲区保存的所有写命令
+    B -&gt;&gt; B: 接受并执行主服务器发来的所有写命令
+    
+</code></pre>
+<h2 id="数据传播">数据传播</h2>
+<p>从服务器同步完主服务的数据后也并不代表着结束。后续有客户端给主服务发送写命令时，主服务器中的数据也会和从服务器不一致。所以我们还需要一个方法将这种变化也同步到从服务器中去。Redis中采用的方法为，**当主服务器收到新的写指令时，在它操作完自己的数据之后，会将这个写指令发送给它的所有从服务器。**以此，达成数据同步的效果。</p>
+<pre><code class=" mermaid">sequenceDiagram
+	participant C as 客户端（用户）
+	participant A as 主服务器
+	participant B as 从服务器
+	C -&gt;&gt; A: 发送写指令
+	A -&gt;&gt; A: 执行写指令
+	A -&gt;&gt; B: 发送写指令
+	B -&gt;&gt; B: 执行写指令
+</code></pre>
+<p>这是书上给的解释，但是这个解释看起来很奇怪，Redis中，<strong>主服务器真的会每完成一个写操作之后都会将其立马发送给从服务器吗？</strong></p>
+<p>在网上搜了一下解释之后，我得到了这个结论：<strong>不会！</strong></p>
+<p>事实上，主服务器在执行完写指令之后，会现将这个指令写入<a href="#%E5%A4%8D%E5%88%B6%E7%A7%AF%E5%8E%8B%E7%BC%93%E5%86%B2%E5%8C%BA"><strong>复制积压缓冲区(Replication Backlog)</strong></a>，这个知识点在后面也会提到，但是为了避免误解，这里先小提一嘴。主服务器会在之后通过这个缓冲区，异步地将命令发送给所有从服务器。</p>
+<p><strong>注意：</strong> 每一个已连接的从服务器，主服务器都会为其创建一个复制输出缓冲区。主服务器会将复制积压缓冲区中的新命令，分发到每个对应的复制输出缓冲区中。</p>
+<p>复制输出缓冲区的信息发送时机，取决于操作系统的通知时机。当主服务器发现某个从服务器的Socket可写时，便会理科捕获该事件，然后立马尽最大努力发送尽可能多的指令。</p>
+<h2 id="旧版复制功能的缺陷">旧版复制功能的缺陷</h2>
+<p>主要的缺陷体现在从服务器宕机重连的情况。在Redis中，主从复制可被分为以下两种情况：</p>
+<ul>
+<li>初次复制：从服务器以前没有父之过任何主服务器，或者从服务器这次要复制的主服务器对象与上一次不同
+<ul>
+<li>能正常且很好地使用我们之前讲的方法进行复制</li>
+</ul>
+</li>
+<li>断线后重新复制：处于命令传播阶段的从服务器因为某种原因断线了，现在重新连接又连上了主服务器
+<ul>
+<li>也能正常使用我们之前将的方法进行复制，但是为有些问题：断线后的重连所带来的重新复制，用的是我们之前讲的相同的方法，这可能会带来很严重的性能问题，<strong>因为SYNC操作是一个非常耗费资源的操作，会涉及到主服务器大量的I/O操作与运算资源，网络资源，和从服务器的I/O资源。</strong></li>
+</ul>
+</li>
+</ul>
+<p>旧版复制功能的问题，书中给了一个很明确的例子：</p>
+<p><img src="/images/%E6%97%A7%E7%89%88%E4%B8%BB%E4%BB%8E%E6%96%AD%E7%BA%BF%E9%87%8D%E8%BF%9E%E5%A4%8D%E5%88%B6%E7%9A%84%E6%B5%81%E7%A8%8B.png" srcset="/img/loading.gif" lazyload alt="旧版主从断线重连复制的流程"></p>
+<p>可以看到，从服务器从断开连接到重新连接中间，主服务器值增加了3个新的写命令。但是从服务器恢复的流程却是重新读取包含了整个主服务器数据库数据的RDB文件，这通厂会带来极大的资源消耗。因此，新版的断线重连复制功能不再需要主服务器写RDB文件后再让从服务器读，而是让主服务器将在从服务器断线期间执行的写命令发送给从服务器，以节省大量的资源。</p>
+<h1>新版复制功能</h1>
+<p>新版Redis中不再采用简单的<code>SYNC</code>机制，而是改为了<code>PSYNC</code>机制，而在这个机制中，在两种不同情况中会采用不同的复制流程：</p>
+<ul>
+<li>初次复制：与原本的<code>SYNC</code>机制相同</li>
+<li>断线后重新复制：让主服务器将在从服务器断线期间执行的写命令发送给从服务器，从服务器接收并执行这些命令即可。</li>
+</ul>
+<p>书中也给了一个很明确的例子（网上的图片有问题，这里只给一个流程图）：</p>
+<pre><code class=" mermaid">sequenceDiagram
+	autonumber
+	participant C as 客户端（用户）
+	participant A as 主服务器
+	participant B as 从服务器
+	loop 命令传播阶段
+	C -&gt;&gt; A: 写命令
+	A -&gt;&gt; A: 执行命令
+	A -&gt;&gt; B: 写命令
+	B -&gt;&gt; B: 执行命令
+	end 
+	B --x B: 断线了
+	loop 正常接收写命令
+	C -&gt;&gt; A: 写命令
+	A -&gt;&gt; A: 执行命令
+	end
+	B --&gt;&gt; B: 恢复连接了
+	B -&gt;&gt; A: 发送PSYNC命令
+	A -&gt;&gt; B: 发送+Continue或&lt;br/&gt;+FULLRESYNC回复
+	A -&gt;&gt; B: 发送主从服务器断线期间&lt;br/&gt;主服务器执行的命令
+	B -&gt;&gt; B: 接收命令并执行
+</code></pre>
+<p>其中，<code>9-11</code>的部分便表达了部分重同步的基本流程。接下来讲一下具体流程</p>
+<h1>部分重同步</h1>
+<p>有以下三个部分组成：</p>
+<ul>
+<li>主服务器的<strong>复制偏移量</strong> (replication offset)和从服务器的复制偏移量</li>
+<li>主服务器的复制积压缓冲区</li>
+<li>服务器的运行ID</li>
+</ul>
+<h2 id="复制偏移量">复制偏移量</h2>
+<p>执行复制的双方都会分别维护一个复制偏移量：</p>
+<ul>
+<li>主服务器每次向从服务器传播N个字节的数据时，就会将自己的复制偏移量加上N</li>
+<li>从服务器每次收到主服务器传播来的N个字节数据时，就激昂自己的复制偏移量加上N</li>
+</ul>
+<p>通过对比主从服务器的复制偏移量，即可很容易地知道主从服务器是否处于同一个状态：</p>
+<ul>
+<li>状态一致，则两者的偏移量总是相同的</li>
+<li>状态不一致，则必然不相同</li>
+</ul>
+<h2 id="复制积压缓冲区">复制积压缓冲区</h2>
+<p>我们之前也提到过这个内容，这里便会将一些细节进行说明。</p>
+<p>复制积压缓冲区是由主服务器维护的一个固定长度，先进先出的队列，默认大小为<code>1MB</code>。当主服务器进行命令传播时，它不仅会将写命令发送给所有从服务器，还会将写命令入队到复制挤压缓冲区里面。</p>
+<p>当从服务器重新连上主服务器时，从服务器会通过<code>PSYNC</code>命令将自己的<strong>复制偏移量offset</strong>发送给主服务器，主服务器会根据这个复制偏移量来决定对从服务器执行何种同步操作：</p>
+<ul>
+<li>如果offset+1开始的数据还存在于复制积压缓冲区中，那么主服务器对从服务器进行部分重同步操作</li>
+<li>如果不存在，则进行完整重同步操作</li>
+</ul>
+<p>从这里可以发现，如果复制积压缓冲区的空间设置得太小，该方法会很容易变成单纯的完整重同步操作。因此，Redis也提供了一个方法来修改这个值。我们可以在服务器配置文件中的<code>repl-backlong-size</code>条目找到对应的方法，以根据需要，来调整这个值。通常来说，我们可以用这个公式来估算：</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>b</mi><mi>u</mi><mi>f</mi><mi>f</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">_</mi><mi>s</mi><mi>i</mi><mi>z</mi><mi>e</mi><mo>=</mo><mi>s</mi><mi>e</mi><mi>c</mi><mi>o</mi><mi>n</mi><mi>d</mi><mo>∗</mo><mi>w</mi><mi>r</mi><mi>i</mi><mi>t</mi><mi>e</mi><mi mathvariant="normal">_</mi><mi>s</mi><mi>i</mi><mi>z</mi><mi>e</mi><mi mathvariant="normal">_</mi><mi>p</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">_</mi><mi>s</mi><mi>e</mi><mi>c</mi><mi>o</mi><mi>n</mi><mi>d</mi></mrow><annotation encoding="application/x-tex">buffer\_size = second * write\_size\_per\_second
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0044em;vertical-align:-0.31em;"></span><span class="mord mathnormal">b</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.10764em;">ff</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">ze</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">seco</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.0044em;vertical-align:-0.31em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">ze</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">seco</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span></span></span></span></span></p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>e</mi><mi>c</mi><mi>o</mi><mi>n</mi><mi>d</mi></mrow><annotation encoding="application/x-tex">second</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">seco</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span></span></span></span>：从服务器断线重连所需的平均时间</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mi>r</mi><mi>i</mi><mi>t</mi><mi>e</mi><mi mathvariant="normal">_</mi><mi>s</mi><mi>i</mi><mi>z</mi><mi>e</mi><mi mathvariant="normal">_</mi><mi>p</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">_</mi><mi>s</mi><mi>e</mi><mi>c</mi><mi>o</mi><mi>n</mi><mi>d</mi></mrow><annotation encoding="application/x-tex">write\_size\_per\_second</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0044em;vertical-align:-0.31em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">ze</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">seco</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span></span></span></span>：主服务器平均每秒产生的写命令数据量（字节数和）</li>
+</ul>
+<p>为了安全考虑，你甚至可以在这个公式前面乘个2或是什么别的合理的数，以确保大部分断线情况都可以用部分重同步来处理。</p>
+<h2 id="服务器运行ID">服务器运行ID</h2>
+<p>每个Redis服务器都会有自己的运行ID，这个ID在服务器启动时自动生成。由40个随机的十六进制字符组成。</p>
+<p>当从服务器对主服务器进行初次复制时，主服务器会将自己的运行ID传送给从服务器，而从服务器则会保存这个ID。每当从服务器断线重连上一个主服务器时，从服务器都会将自己保存的这个ID发送给主服务器：</p>
+<ul>
+<li>如果主服务器接收到的ID与自己的运行ID相同，则代表这个从服务器之前连的就是自己这个服务器。之后，才会继续尝试重同步操作。</li>
+<li>如果不相同，则会进行完整重同步操作。</li>
+</ul>
+<p><strong>随机生成ID，如果出现ID重复的情况该怎么办？</strong></p>
+<ul>
+<li>首先，我们来看看一共有多少可能的ID：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>16</mn><mn>40</mn></msup><mo>=</mo><mn>1.4615</mn><mo>×</mo><msup><mn>10</mn><mn>48</mn></msup></mrow><annotation encoding="application/x-tex">16^{40} = 1.4615 \times 10^{48}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">6</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">40</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1.4615</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">48</span></span></span></span></span></span></span></span></span></span></span></span></li>
+<li>然后，来算算遇到相同ID的概率：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mrow><mn>1.4615</mn><mo>∗</mo><msup><mn>10</mn><mn>48</mn></msup></mrow></mfrac><mo>=</mo><mn>6.8423</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>49</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\frac{1}{1.4615*10^{48}}=6.8423 \times 10^{-49}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1.4615</span><span class="mbin mtight">∗</span><span class="mord mtight">1</span><span class="mord mtight"><span class="mord mtight">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463em;"><span style="top:-2.786em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">48</span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">6.8423</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">49</span></span></span></span></span></span></span></span></span></span></span></span></li>
+<li>也许真实计算的方法其实并不是这样的，但是也大差不差。我觉得看到这个数字就知道为什么了，这不是我们需要担心的事情。</li>
+</ul>
+<h1>PSYNC命令的实现</h1>
+<p>由于我很少看见有谁会问这个问题，因此我在这里就简单写一下几个可能的流程：</p>
+<pre><code class=" mermaid">sequenceDiagram
+	participant A as 主服务器
+	participant B as 从服务器
+	participant C as 客户端
+	C -&gt;&gt; B: 发送SLAVEOF命令
+	alt 从服务器以前没有复制过任何主服务器&lt;br/&gt;或者之前执行过SALVEOF no one命令
+	B -&gt;&gt; A: PSYNC ? -1
+	else 从服务器已经复制过某个服务器
+	B -&gt;&gt; A: PSYNC &lt;runid&gt; &lt;offset&gt;
+	end
+	alt 主服务器执行完整冲同步操作
+	A -&gt;&gt; B: +FULLRESYNC &lt;runid&gt; &lt;offset&gt;
+	B -&gt;&gt; B: 保存 &lt;runid&gt;
+	else 主服务器将与从服务器执行部分重同步
+	A -&gt;&gt; B: +CONTINUE
+	A -&gt;&gt; B: 断线期间的命令
+	else 主服务器版本低于2.8
+	A -&gt;&gt; B: -ERR
+	B -&gt;&gt; A: SYNC
+	A -&gt;&gt; B: 执行旧版本的复制操作
+	end
+</code></pre>
+<h1>复制的实现</h1>
+<p>复制的实现过程会涉及到网络连接，验证连接，身份验证，建立监听，同步操作，命令传播等一连串操作。流程比较复杂，下面给一个大致的说明：</p>
+<ol>
+<li>从服务器将主服务器IP地址和端口号保存袋服务器状态的<code>masterhost</code>属性和<code>masterport</code>属性中</li>
+<li>主从服务器建立套接字连接
+<ul>
+<li>从服务器向主服务器请求建立套接字后，主服务器为该套接字创建<strong>客户端</strong>状态。</li>
+<li>从服务器这时候将同时拥有<strong>服务器</strong>和<strong>客户端</strong>两个身份。</li>
+<li>主从复制的步骤都是以从服务器向主服务器发送命令请求的形式来进行，所以从服务器的客户端身份十分重要。</li>
+</ul>
+</li>
+<li>从服务器向主服务器发送PING命令。
+<ul>
+<li>做这一步的目的有：
+<ul>
+<li>检查套接字读写状态是否正常</li>
+<li>检查主服务器是否能正常处理命令请求</li>
+</ul>
+</li>
+<li>从服务器发送PING命令后可能会遇到如下情况：
+<ul>
+<li>主服务器返回了命令回复，但从服务器无法及时读取命令回复的内容。此时从服务器会断开并重创建连向主服务器的套接字</li>
+<li>主服务器返回了一个错误，从服务器也会断开并重连</li>
+<li>主服务器返回了命令回复，从服务器读取到了PONG命令，表示连接正常。这种情况下可以继续执行复制操作。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>执行身份验证操作，不过这取决于从服务器是否设置了<code>masterauth</code>选项
+<ul>
+<li>只有当主服务器设置了<code>requirepass</code>选项并且与从服务器发送的密码相同，或者主服务器没有设置<code>requirepass</code>选项且从服务器也没有设置<code>masterauth</code>选项时，才会视为身份验证通过</li>
+<li>身份验证不通过的情况下，基于主从服务器的设置，决定主服务器返回的内容
+<ul>
+<li>设置了<code>requirepass</code>选项但没有设置<code>masterauth</code>选项：返回<code>NOAUTH</code>错误</li>
+<li>没有设置<code>requirepass</code>选项但设置了<code>masterauth</code>选项：返回<code>no password is set</code>错误</li>
+<li>主从服务器设置的密码不同：返回<code>invalid password</code>错误</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>从服务器发送端口信息。主服务器在接受到信息后，会将从服务器的端口号记录在所对应客户端状态的<code>slave_listening_port</code>属性中</li>
+<li>同步：就，同步</li>
+<li>命令传播：就，命令传播</li>
+</ol>
+<h1>心跳检测</h1>
+<p>命令传播阶段，从服务器默认会议每秒一次的频率，像主服务器发送命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmd">REPLCONF ACK &lt;replication_offset&gt;<br></code></pre></td></tr></table></figure>
+<p>其中<code>replication_pffset</code>是从服务器当前的复制偏移量。</p>
+<p>该命令有三个作用：</p>
+<ul>
+<li>检测主从服务器的网络连接状态
+<ul>
+<li>如果主服务器超过一秒（默认）没有收到从服务器发来的命令，则就可以认为主从服务之间的连接出了问题</li>
+<li>在主服务器中发送<code>INFO replication</code>命令可以查看具体信息</li>
+</ul>
+</li>
+<li>辅助实现<code>min-slaves</code>选项
+<ul>
+<li>Redis的<code>min-slave-to-write</code>和<code>min-slaves-max-lag</code>两个选项可有用于防止主服务器在不安全的情况下执行写命令：
+<ul>
+<li>一般本地测试的时候不用管这个问题，毕竟你不用从服务器</li>
+</ul>
+</li>
+<li>前者的意思是最小需要有的从服务器数量，后者的意思是最小从服务器数量的延迟值都大于或等于n秒</li>
+</ul>
+</li>
+<li>检测命令丢失
+<ul>
+<li>如果主服务器在传播命令时因为网络原因导致从服务器没有接收到，导致从服务器的复制偏移量没有发生改变。这时发送这个命令便可以让主服务器发现从服务器的数据与自己的不一致，因此会再次向从服务器传播未发送的命令。</li>
+</ul>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Redis%E5%AD%A6%E4%B9%A0/" class="category-chain-item">Redis学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/" class="print-no-link">#Redis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《Redis设计与实现》主从复制</div>
+      <div>http://example.com/2025/08/29/Redis学习/《Redis设计与实现》主从复制/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Clain Chen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/29/Fluid%E4%B8%BB%E9%A2%98%E4%B8%8B%EF%BC%8C%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93%E7%9A%84mermaid%E7%89%88%E6%9C%AC%E4%B8%8E%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8%E7%9A%84Typora%E7%89%88%E6%9C%AC%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/28/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8BRDB%E5%92%8CAOF%E6%8C%81%E4%B9%85%E5%8C%96/" title="《Redis设计与实现》RDB和AOF持久化">
+                        <span class="hidden-mobile">《Redis设计与实现》RDB和AOF持久化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/11.9.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+
+    // 最佳方案：找到对应的标题元素并获取其真实ID
+    setTimeout(function() {
+      jQuery('#toc-body a[href="#"]').each(function() {
+        var $link = jQuery(this);
+        var linkText = $link.text().trim();
+        
+        // 找到文本内容匹配的标题元素
+        var $matchingHeader = jQuery('.markdown-body h1').filter(function() {
+          return jQuery(this).text().trim() === linkText;
+        }).first();
+        
+        if ($matchingHeader.length > 0) {
+          var headerId = $matchingHeader.attr('id');
+          headerID = headerId.trim().toLowerCase().replace(/[s]+/g, '-');
+          if (headerId) {
+            $link.attr('href', '#' + headerId);
+          }
+        }
+      });
+    }, 300); // 给tocbot更多时间完成渲染
+
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

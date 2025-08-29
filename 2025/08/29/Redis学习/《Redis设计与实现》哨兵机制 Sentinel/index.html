@@ -1,0 +1,941 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Clain Chen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="哨兵 Sentinel              哨兵是Redis高可用性解决方案：由一个或多个哨兵实例组成的哨兵系统可以监视任意多个主服务器，并在被监视的主服务器进入下限状态时，自动将下线的主服务器属下的某个从服务器升级为新的主服务器，然后由新的主服务器代替已下线的主服务器继续处理命令请求。            启动并初始化哨兵 以下两种命令都可以启动一个哨兵： 12345#1redis-se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Redis设计与实现》 哨兵机制 Sentinel">
+<meta property="og:url" content="http://example.com/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%20Sentinel/index.html">
+<meta property="og:site_name" content="Clain的小屋">
+<meta property="og:description" content="哨兵 Sentinel              哨兵是Redis高可用性解决方案：由一个或多个哨兵实例组成的哨兵系统可以监视任意多个主服务器，并在被监视的主服务器进入下限状态时，自动将下线的主服务器属下的某个从服务器升级为新的主服务器，然后由新的主服务器代替已下线的主服务器继续处理命令请求。            启动并初始化哨兵 以下两种命令都可以启动一个哨兵： 12345#1redis-se">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-29T11:08:05.000Z">
+<meta property="article:modified_time" content="2025-08-29T14:01:51.228Z">
+<meta property="article:author" content="Clain Chen">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>《Redis设计与实现》 哨兵机制 Sentinel - Clain的小屋</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"anchorLink":true,"anchorLinkSymbol":"#","achorLinkSpace":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Clain的小屋</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《Redis设计与实现》 哨兵机制 Sentinel"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-29 21:08" pubdate>
+          2025年8月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《Redis设计与实现》 哨兵机制 Sentinel</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2025年8月30日 凌晨
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1>哨兵 Sentinel</h1>
+<div class="note note-info">
+            <p>哨兵是Redis高可用性解决方案：由一个或多个哨兵实例组成的哨兵系统可以监视任意多个主服务器，并在被监视的主服务器进入下限状态时，自动将下线的主服务器属下的某个从服务器升级为新的主服务器，然后由新的主服务器代替已下线的主服务器继续处理命令请求。</p>
+          </div>
+<h1>启动并初始化哨兵</h1>
+<p>以下两种命令都可以启动一个哨兵：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cmd">#<span class="hljs-number">1</span><br>redis-sentinel /<span class="hljs-built_in">path</span>/to/your/sentinel.conf<br><br>#<span class="hljs-number">2</span><br>redis-server /<span class="hljs-built_in">path</span>/to/your/sentinel.conf --sentinel<br></code></pre></td></tr></table></figure>
+<p>这两个命令的效果完全相同。</p>
+<p>当一个哨兵启动时，它需要执行以下步骤：</p>
+<ul>
+<li>初始化服务器
+<ul>
+<li>哨兵实际上就是一个在特殊模式下运行的Redis服务器，因此，第一件事就是初始化一个普通的Redis服务器。然后再对这个服务器做后续操作。</li>
+<li>初始化普通Redis服务器时不会进行任何的RDB或AOF数据恢复。因为哨兵服务器中不存在数据库。</li>
+</ul>
+</li>
+<li>将普通Redis服务器使用的代码替换成哨兵专用代码
+<ul>
+<li>创建普通的Redis服务器后，要将里面的代码替换为哨兵用的代码。</li>
+<li>替换代码有客户端允许发送的命令：原先的<code>GET, SET</code>等对数据库进行操作的命令都不再有效</li>
+<li>还会替换默认的端口号等等常量值</li>
+</ul>
+</li>
+<li>初始化哨兵状态
+<ul>
+<li>程序里会初始化一个哨兵结构</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sentinelState</span> &#123;</span><br><br>    <span class="hljs-comment">// 当前纪元，用于实现故障转移</span><br>    <span class="hljs-type">uint64_t</span> current_epoch;<br><br>    <span class="hljs-comment">// 保存了所有被这个 sentinel 监视的主服务器</span><br>    <span class="hljs-comment">// 字典的键是主服务器的名字</span><br>    <span class="hljs-comment">// 字典的值则是一个指向 sentinelRedisInstance 结构的指针</span><br>    dict *masters;<br><br>    <span class="hljs-comment">// 是否进入了 TILT 模式？</span><br>    <span class="hljs-type">int</span> tilt;<br><br>    <span class="hljs-comment">// 目前正在执行的脚本的数量</span><br>    <span class="hljs-type">int</span> running_scripts;<br><br>    <span class="hljs-comment">// 进入 TILT 模式的时间</span><br>    <span class="hljs-type">mstime_t</span> tilt_start_time;<br><br>    <span class="hljs-comment">// 最后一次执行时间处理器的时间</span><br>    <span class="hljs-type">mstime_t</span> previous_time;<br><br>    <span class="hljs-comment">// 一个 FIFO 队列，包含了所有需要执行的用户脚本</span><br>    <span class="hljs-built_in">list</span> *scripts_queue;<br><br>&#125; sentinel;<br><br></code></pre></td></tr></table></figure>
+<ul>
+<li>根据给定的配置文件，初始化哨兵的监视主服务器列表（初始化<code>*master</code>属性）
+<ul>
+<li><code>master</code>属性的配置就被存放在<code>sentinel.conf</code>配置文件中</li>
+<li>配置文件中每一个对应的<code>master</code>定义都会为哨兵初始化一个<code>sentinelRedisInstance</code>结构</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sentinelRedisInstance</span> &#123;</span><br><br>    <span class="hljs-comment">// 标识值，记录了实例的类型，以及该实例的当前状态</span><br>    <span class="hljs-type">int</span> flags;<br><br>    <span class="hljs-comment">// 实例的名字</span><br>    <span class="hljs-comment">// 主服务器的名字由用户在配置文件中设置</span><br>    <span class="hljs-comment">// 从服务器以及 Sentinel 的名字由 Sentinel 自动设置</span><br>    <span class="hljs-comment">// 格式为 ip:port ，例如 &quot;127.0.0.1:26379&quot;</span><br>    <span class="hljs-type">char</span> *name;<br><br>    <span class="hljs-comment">// 实例的运行 ID</span><br>    <span class="hljs-type">char</span> *runid;<br><br>    <span class="hljs-comment">// 配置纪元，用于实现故障转移</span><br>    <span class="hljs-type">uint64_t</span> config_epoch;<br><br>    <span class="hljs-comment">// 实例的地址</span><br>    sentinelAddr *addr;<br><br>    <span class="hljs-comment">// SENTINEL down-after-milliseconds 选项设定的值</span><br>    <span class="hljs-comment">// 实例无响应多少毫秒之后才会被判断为主观下线（subjectively down）</span><br>    <span class="hljs-type">mstime_t</span> down_after_period;<br><br>    <span class="hljs-comment">// SENTINEL monitor &lt;master-name&gt; &lt;IP&gt; &lt;port&gt; &lt;quorum&gt; 选项中的 quorum 参数</span><br>    <span class="hljs-comment">// 判断这个实例为客观下线（objectively down）所需的支持投票数量</span><br>    <span class="hljs-type">int</span> quorum;<br><br>    <span class="hljs-comment">// SENTINEL parallel-syncs &lt;master-name&gt; &lt;number&gt; 选项的值</span><br>    <span class="hljs-comment">// 在执行故障转移操作时，可以同时对新的主服务器进行同步的从服务器数量</span><br>    <span class="hljs-type">int</span> parallel_syncs;<br><br>    <span class="hljs-comment">// SENTINEL failover-timeout &lt;master-name&gt; &lt;ms&gt; 选项的值</span><br>    <span class="hljs-comment">// 刷新故障迁移状态的最大时限</span><br>    <span class="hljs-type">mstime_t</span> failover_timeout;<br><br>    <span class="hljs-comment">// ...</span><br><br>&#125; sentinelRedisInstance;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sentinelAddr</span> &#123;</span><br><br>    <span class="hljs-type">char</span> *ip;<br><br>    <span class="hljs-type">int</span> port;<br><br>&#125; sentinelAddr;<br><br></code></pre></td></tr></table></figure>
+<ul>
+<li>创建连向主服务器的网络连接
+<ul>
+<li>对监视的每一个主服务器，哨兵都会建立一个网络链接。哨兵会成为这些主服务器的客户端，以能够发送命令且接受消息。</li>
+<li>对于每一个被哨兵监视的主服务器来说，哨兵都会建立两个连向主服务器的异步连接：
+<ul>
+<li>命令连接，用于发送命令和接收命令回复</li>
+<li>订阅连接，用于订阅主服务器的<code>__sentinel__.hello</code>频道</li>
+</ul>
+</li>
+<li><strong>订阅连接是做什么用的？</strong>
+<ul>
+<li>Redis目前的发布订阅功能中，发送信息都不会被保存到Redis服务器中，如果在信息发送时，想要接受信息的客户端不在线或断线，则这个客户端将会丢失这条消息。因此，哨兵的订阅就是为了不丢失<code>__sentinel__.hello</code>频道的任何信息。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1>获取各个服务器的信息</h1>
+<p>哨兵获取各个服务器信息的方式是一种十分拓扑的方式。书中讲的非常细致，但这里我主要总结一下流程：</p>
+<ul>
+<li>
+<p>哨兵每隔十秒钟用命令连接向自己监视的所有主服务器发送一次<code>INFO</code>命令，并通过分析回复信息来获取每隔主服务器当前的信息</p>
+<ul>
+<li>
+<p>主服务器通常会返回两方面的信息：</p>
+<ul>
+<li>主服务器本身的信息</li>
+<li>主服务器属下所有从服务器信息</li>
+</ul>
+</li>
+<li>
+<p>收到的主服务器信息会用于更新哨兵中的这个主服务器的实例结构</p>
+</li>
+<li>
+<p>收到的从服务器信息会用于更新哨兵中的这个主服务器的从服务器字典</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>类似以下内容：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-params">#</span> Server<br>...<br>run<span class="hljs-built_in">_</span>id:7611c59dc3a29aa6fa0609f841bb6a1019008a9c<br>...<br><span class="hljs-params">#</span> Replication<br>role:master <span class="hljs-params">#</span> 代表消息来自于主服务器<br>...<br><span class="hljs-params">#</span> 代表三个从服务器信息<br>slave0:ip=127.0.0.1,port=11111,state=online,offset=43,lag=0<br>slave1:ip=127.0.0.1,port=22222,state=online,offset=43,lag=0<br>slave2:ip=127.0.0.1,port=33333,state=online,offset=43,lag=0<br>...<br><span class="hljs-params">#</span> Other sections<br>...<br><br></code></pre></td></tr></table></figure>
+<ul>
+<li>当哨兵发现了新的从服务器（来自于主服务器返回的从服务器信息，并基于观察这个从服务器是否在之前就存在于这个主服务器中）是，将会与这个从服务器建立命令连接和订阅连接。目的与连接主服务器相同。
+<ul>
+<li>如果这个从服务器也是其他服务器的主服务器，则会继续进行更新。</li>
+</ul>
+</li>
+<li>哨兵每隔十秒钟也会向所有从服务器发送一次<code>INFO</code>命令，返回的信息也会被用于更新从服务器的实例结构。</li>
+</ul>
+<p>类似以下内容：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-params">#</span> Server<br>...<br>run<span class="hljs-built_in">_</span>id:32be0699dd27b410f7c90dada3a6fab17f97899f <span class="hljs-params">#</span> 选举时也可能会用到<br>...<br><span class="hljs-params">#</span> Replication<br>role:slave <span class="hljs-params">#</span> 代表消息来自于从服务器<br>master<span class="hljs-built_in">_</span>host:127.0.0.1<br>master<span class="hljs-built_in">_</span>port:6379<br>master<span class="hljs-built_in">_</span>link<span class="hljs-built_in">_</span>status:up <span class="hljs-params">#</span> 这个很重要，在后面选新主服务器时会用到<br>slave<span class="hljs-built_in">_</span>repl<span class="hljs-built_in">_</span>offset:11887<br>slave<span class="hljs-built_in">_</span>priority:100 <span class="hljs-params">#</span> 这个也很重要，选举时也会用到<br><span class="hljs-params">#</span> Other sections<br>...<br><br></code></pre></td></tr></table></figure>
+<ul>
+<li>哨兵每隔两秒钟会向所有监视的主服务器和从服务器发送命令：<code>PUBLISH __sentinel__:hello &quot;&lt;s_ip&gt;,&lt;s_port&gt;,&lt;s_runid&gt;,&lt;s_epoch&gt;,&lt;m_name&gt;,&lt;m_ip&gt;,&lt;m_port&gt;,&lt;m_epoch&gt;&quot;</code>
+<ul>
+<li>命令中包含了该哨兵的一些信息和该哨兵监视下的主服务器信息
+<ul>
+<li>如果是发送给从服务器，则是包含该从服务器正在复制的主服务器信息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接受来自主服务器和从服务器的频道信息：哨兵在建立起订阅连接之后，便会向连接服务器发送命令<code>SUBSCRIBE __sentinel__:hello</code>
+<ul>
+<li>对这个频道的订阅会持续到哨兵与该服务器的连接断开为止</li>
+<li><strong>可以注意到一点，由于之前说了哨兵会每隔两秒向所有主从服务器发送发布消息，因此，Redis可以使用这个机制，来让哨兵接受到其他连接了同一个服务器的哨兵的订阅消息。而订阅消息里面又有发布消息的哨兵的信息，因此，哨兵可以通过这个性质来相互建立连接。</strong></li>
+<li>哨兵会持续维护自己监视中的所有主服务器的哨兵字典，以在每一次收到订阅消息时，判断是否要更新对应的哨兵结构，还是要创建一个新的哨兵结构并放进对应的字典中。</li>
+</ul>
+</li>
+<li>连接其他哨兵服务器时只会建立命令连接而不会有订阅连接。</li>
+</ul>
+<p>至此，就完成了获取服务器信息并维护对各个服务器的连接操作。</p>
+<h1>检查下线状态的机制</h1>
+<h2 id="主观下线状态">主观下线状态</h2>
+<p>哨兵会对所有建立了命令连接的实例每秒发送一次<code>PING</code>命令，并通过实例返回的<code>PING</code>命令回复来判断实例是否在线。回复仅可能有以下两种情况：</p>
+<ul>
+<li>有效回复：实例返回<code>+PONG, -LOADING, -MASTERDOWN</code>三种回复的其中一种</li>
+<li>无效回复：除有效回复外的其他回复，或者指定时限内没有任何回复</li>
+</ul>
+<p>对于这个<strong>指定时限</strong>，哨兵配置文件中的<code>down-after-milliseconds</code>选项指定了这个时限。如果一个实例在这个时限内连续相哨兵返回无效回复，那么哨兵将在这个实例结构中的<code>flags</code>属性打开<code>SRI_S_DOWN</code>标识，以标识这个实力已经进入主观下线状态。</p>
+<div class="note note-info">
+            <p>用户设置的<code>down_after_milliseconds</code>选项的值，会被同时用于判断所有连接于这个哨兵的其他所有服务器的主观下线状态。当然，都说是主观下线状态了，因此这个状态也只是这个哨兵认为的而已。</p><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs tex">sentinel monitor master 127.0.0.1 6379 2<br>sentinel down-after-milliseconds master 50000<br></code></pre></td></tr></table></figure><p>这个配置代表了如果有任意一个服务器在<code>50000</code>毫秒之内持续给这个哨兵发送无效回复，那么这个哨兵便会将其视为主观下线。</p><p>如果有另一个哨兵将这个值设得更大，那么另一个哨兵则不见得也会将其视为主观下线。</p>
+          </div>
+<h2 id="客观下线状态">客观下线状态</h2>
+<p>哨兵如何判断一个主服务器是否是真的下线了？其实逻辑很简单：<strong>哨兵会向所有监视这个主服务器的哨兵进行询问，看他们是否也认为这个主服务器进入了下线状态。如果收到肯定的答复足够多，则这个哨兵会将这个主服务器视为客观下线，并且执行故障转移操作</strong></p>
+<ul>
+<li>当一个哨兵认为一个主服务器进入了主观下线状态时，会向所有监视该服务器的哨兵发送一个<code>SENTINEL is-master-down-by-addr &lt;ip&gt; &lt;port&gt; &lt;current_epoch&gt; &lt;runid&gt;</code>命令，已询问其他哨兵是否同意主服务器已下线。
+<ul>
+<li>这里的<code>&lt;ip&gt; &lt;port&gt;</code>指的是对应主服务器的IP和端口号</li>
+<li><code>&lt;current_epoch</code>为这个哨兵当前的配置纪元，用于选举领头哨兵</li>
+</ul>
+</li>
+<li>目标哨兵接收到源哨兵的<code>SENTINEL is-master-down-by-addr</code>命令时，会分析并取出命令请求中的各个参数，并判断对应的主服务器是否下线。然后对源哨兵进行回复。</li>
+<li>源哨兵收到回复后，会统计其他哨兵同意主服务器下线的数量，当达到配置指定的所需数量时，便会将主服务器实例结构的<code>flag</code>属性的<code>SRI_O_DOWN</code>表示打开，表示主服务器已经进入客观下线状态。
+<ul>
+<li>这个配置是类似于<code>sentinel monitor master 127.0.0.1 6379 2</code>。这个例子表示该哨兵在收到包括自己在内同意主服务器下线的数量达到了2时，便会将主服务器设为客观下线状态。</li>
+</ul>
+</li>
+</ul>
+<h1>选举领头哨兵</h1>
+<p>选举领头哨兵基本上用的是一种受限的Gossip/Flooding协议。</p>
+<p>简单来说就是如下几个点：</p>
+<ul>
+<li>只有监视着这个下线服务器的哨兵才能够参与选举（废话）。</li>
+<li>所有哨兵在一个选举期间只能有一次选一个哨兵为局部领头哨兵的机会。</li>
+<li>所有发现主服务器进入客观下线的哨兵都会要求其他哨兵将自己设置为局部领头哨兵。</li>
+<li>哨兵选另一个哨兵为局部领头哨兵的规则是先到先得，假如A,B两个哨兵同时要求C哨兵将自己设置为局部领头哨兵，如果C先处理了A，那么就不会再处理B。</li>
+<li>假如以个没有将主服务器视为客观下线的哨兵发送选举消息给了另一个相同状态的哨兵，接收方则会无视这个消息。</li>
+<li>源哨兵在接收到目标哨兵返回的命令回复之后，会检查回复中的<code>leader_epoch</code>参数的值是否与自己的配置纪元相同。如果相同，则继续取出恢复中的<code>leader_runid</code>参数，如果<code>leader_runid</code>与原哨兵的运行ID一只，则表示目标哨兵将源哨兵设置成了局部领头哨兵。</li>
+<li>只要有任何一个哨兵被半数以上的哨兵设置成了局部领头哨兵，那这个哨兵将成为领头哨兵，并执行故障转移操作。
+<ul>
+<li>由于每一个哨兵在一个配置纪元中只能设置一次局部领头哨兵，所以当任意一个哨兵有半数以上的票，则代表尘埃落定。</li>
+</ul>
+</li>
+<li>哨兵选举结束后就会将自己的配置纪元加1。此时，如果这个哨兵还接收到了来自于其他哨兵的选举信息，由于它的配置纪元比接收到的信息中的纪元不一致，因此它会无视这些消息。</li>
+</ul>
+<p>最终所有参与了本次选举的哨兵都最多会做一次投票，并且所有哨兵最终的配置纪元都会加一。</p>
+<h1>故障转移</h1>
+<p>当一个哨兵被正式选为领头哨兵时，该哨兵将对已下线的主服务器执行故障转移操作。流程如下：</p>
+<ul>
+<li>从已下线的主服务器属下的所有从服务器中，选出一个从服务器，将其转为主服务器</li>
+<li>让已下线的主服务器属下的所有其他从服务器改为复制新的主服务器</li>
+<li>将以下线的主服务器设为新主服务器的从服务器，并持续监视该服务器，当其重新上线时便会正式成为从服务器</li>
+</ul>
+<h2 id="挑选新的主服务器">挑选新的主服务器</h2>
+<p>领头Sentinel会将已下线主服务器的所有从服务器保存到一个列表里面，然后按照以下规则，一项一项地对列表进行过滤：</p>
+<ul>
+<li>
+<p>删除列表中所有处于下线或者断线状态的从服务器，这可以保证列表中剩余的从服务器都是正常在线的。</p>
+<ul>
+<li>这个状态是出于哨兵的角度来看的，意味着这个从服务器长时间没有正常与哨兵进行联系。</li>
+</ul>
+</li>
+<li>
+<p>删除列表中所有最近五秒内没有回复过领头Sentinel的INFO命令的从服务器，这可以保证列表中剩余的从服务器都是最近成功进行过通信的。</p>
+</li>
+<li>
+<p>删除所有与已下线主服务器连接断开超过<code>down-after-milliseconds * 10</code>毫秒的从服务器：<code>down-after-milliseconds</code>选项指定了判断主服务器下线所需的时间，而删除断开时长超过<code>down-after-milliseconds * 10</code>毫秒的从服务器，则可以保证列表中剩余的从服务器都没有过早地与主服务器断开连接，换句话说，列表中剩余的从服务器保存的数据都是比较新的。</p>
+<ul>
+<li>这个状态是基于从服务器角度来看的。这个服务器可以相应哨兵，但是它可能与主服务器的连接出了问题。</li>
+<li><strong>哨兵怎么得到这个值的？</strong>
+<ul>
+<li>哨兵每隔十秒都会向从服务器发送一次<code>INFO</code>，返回的信息中有一个条目叫<code>master_link_status</code>。当这个条目的值为<code>down</code>时，意味着这个从服务器丢失了对主服务器连接。此时，哨兵会对这个从服务器设置一个计时器（其实就是记录当前系统时间）。如果哨兵在下一次发送<code>INFO</code>消息且收到该条目的值为<code>on</code>，则会取消这个计时器。在挑选新主服务器时，如果在从服务器实例结构中发现该属性为<code>off</code>，则会用当前系统时间与对应的计时器进行计算。以此即可得到从服务器与主服务器连接断开的时间。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>之后，领头Sentinel将根据从服务器的优先级，对列表中剩余的从服务器进行排序，并选出其中优先级最高的从服务器。</p>
+<p>如果有多个具有相同最高优先级的从服务器，那么领头Sentinel将按照从服务器的复制偏移量，对具有相同最高优先级的所有从服务器进行排序，并选出其中偏移量最大的从服务器（复制偏移量最大的从服务器就是保存着最新数据的从服务器）。</p>
+<p>最后，如果有多个优先级最高、复制偏移量最大的从服务器，那么领头Sentinel将按照运行ID对这些从服务器进行排序，并选出其中运行ID最小的从服务器。</p>
+<h2 id="修改从服务器的复制目标">修改从服务器的复制目标</h2>
+<p>一言以蔽之，就是领头哨兵会向所有将要成为新主服务器的从服务器发送一个<code>SLAVEOF</code>命令，让他们进行复制。</p>
+<p>对于已经下线的，将来也要成为新主服务器的那个主服务器，在它上线时，领头哨兵也会对它发送一个<code>SLAVEOF</code>命令</p>
+<h1>更多问题</h1>
+<p><strong>主服务器错误下线的时候，没有任何一个从服务器中的数据完成了同步，即便进行了故障转移也会丢失数据。这种情况如何处理？</strong></p>
+<ul>
+<li>Redis基于工程上的权衡，它在设计上就是允许一定的数据丢失。分布式系统无法同时满足一致性(Consistency)，可用性(Availability)和分区容错性(Partition Tolerance)。Redis的主从复制与哨兵机制的设计倾向于<strong>AP</strong>，在发生主节点故障时，会有限保证服务可用，并接受一定程度的数据丢失风险。因此，不用处理。如果真的要保证强一致性的话，可以考虑用别的框架（ZooKeeper等）。如果就是想用Redis，那可以考虑将配置文件中对于数据同步的参数调得更严格一些，以降低这种情况发生的可能。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Redis%E5%AD%A6%E4%B9%A0/" class="category-chain-item">Redis学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/" class="print-no-link">#Redis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《Redis设计与实现》 哨兵机制 Sentinel</div>
+      <div>http://example.com/2025/08/29/Redis学习/《Redis设计与实现》哨兵机制 Sentinel/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Clain Chen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/29/Fluid%E4%B8%BB%E9%A2%98%E4%B8%8B%EF%BC%8C%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93%E7%9A%84mermaid%E7%89%88%E6%9C%AC%E4%B8%8E%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8%E7%9A%84Typora%E7%89%88%E6%9C%AC%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题">
+                        <span class="hidden-mobile">Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/11.9.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+
+    // 最佳方案：找到对应的标题元素并获取其真实ID
+    setTimeout(function() {
+      jQuery('#toc-body a[href="#"]').each(function() {
+        var $link = jQuery(this);
+        var linkText = $link.text().trim();
+        
+        // 找到文本内容匹配的标题元素
+        var $matchingHeader = jQuery('.markdown-body h1').filter(function() {
+          return jQuery(this).text().trim() === linkText;
+        }).first();
+        
+        if ($matchingHeader.length > 0) {
+          var headerId = $matchingHeader.attr('id');
+          headerID = headerId.trim().toLowerCase().replace(/[s]+/g, '-');
+          if (headerId) {
+            $link.attr('href', '#' + headerId);
+          }
+        }
+      });
+    }, 300); // 给tocbot更多时间完成渲染
+
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -19,25 +19,23 @@
   <meta name="author" content="Clain Chen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+    <meta name="description" content="问题描述 写技术博客的时候，我们时常会用到mermaid做一些流程图或者时序图什么的，但是Fluid主题中默认使用的mermaid版本总是与我们本地编写的时候使用的mermaid版本不相同（通常Fluid主题中的版本要小许多）。这道值通常会出现mermaid在本地可以渲染出来，但是到了网页上之后却无法渲染。 同样遇到这个问题的小伙伴，不想看我查出来这个问题的心路历程，可以直接跳到解决方案 心路历程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java学习 - JVM, JDK, JRE">
-<meta property="og:url" content="http://example.com/2024/11/24/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20JVM,%20JDK,%20JRE/index.html">
+<meta property="og:title" content="Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题">
+<meta property="og:url" content="http://example.com/2025/08/29/Fluid%E4%B8%BB%E9%A2%98%E4%B8%8B%EF%BC%8C%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93%E7%9A%84mermaid%E7%89%88%E6%9C%AC%E4%B8%8E%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8%E7%9A%84Typora%E7%89%88%E6%9C%AC%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="Clain的小屋">
-<meta property="og:description" content="Java SE vs Java EE 简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等">
+<meta property="og:description" content="问题描述 写技术博客的时候，我们时常会用到mermaid做一些流程图或者时序图什么的，但是Fluid主题中默认使用的mermaid版本总是与我们本地编写的时候使用的mermaid版本不相同（通常Fluid主题中的版本要小许多）。这道值通常会出现mermaid在本地可以渲染出来，但是到了网页上之后却无法渲染。 同样遇到这个问题的小伙伴，不想看我查出来这个问题的心路历程，可以直接跳到解决方案 心路历程">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-24T09:45:00.000Z">
-<meta property="article:modified_time" content="2024-12-04T11:48:20.036Z">
+<meta property="article:published_time" content="2025-08-29T06:12:05.000Z">
+<meta property="article:modified_time" content="2025-08-29T07:02:31.145Z">
 <meta property="article:author" content="Clain Chen">
-<meta property="article:tag" content="Java">
-<meta property="article:tag" content="JVM">
-<meta property="article:tag" content="JDK">
-<meta property="article:tag" content="JRE">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="Fluid主题">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java学习 - JVM, JDK, JRE - Clain的小屋</title>
+  <title>Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题 - Clain的小屋</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -48,8 +46,6 @@
   <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
 
 
 
@@ -218,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java学习 - JVM, JDK, JRE"></span>
+            <span id="subtitle" data-typed-text="Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题"></span>
           
         </div>
 
@@ -229,8 +225,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-24 20:45" pubdate>
-          2024年11月24日 晚上
+        <time datetime="2025-08-29 16:12" pubdate>
+          2025年8月29日 下午
         </time>
       </span>
     
@@ -241,7 +237,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.1k 字
         
       </span>
     
@@ -252,7 +248,7 @@
         
         
         
-          12 分钟
+          10 分钟
         
       </span>
     
@@ -298,12 +294,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java学习 - JVM, JDK, JRE</h1>
+            <h1 id="seo-header">Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年12月4日 晚上
+                    本文最后更新于 2025年8月29日 下午
                   
                 
               </p>
@@ -311,67 +307,25 @@
             
               <div class="markdown-body">
                 
-                <h1>Java SE vs Java EE</h1>
-<p>简单来说，对比于Java，Java SE是Java的基础版本，包括了支持Java变成语言的基本功能和标准库，比如集合框架，IO，网络，并发等等。Java SE 适合用于小型或单机的应用程序，亦或者是控制台应用程序和工具（自动化脚本等）。而Java EE则是面向于开发复杂的企业级分布式应用，提供了面向企业级开发的扩展框架和API，比如Web服务、EJB、JPA等。Java EE适合用于企业级分布式应用，适用于具有多层架构系统和高并发，高可用性需求的大型应用程序。</p>
-<p>由此，显然可以看出，Java EE对比Java SE是一个复杂得多的Java开发框架，因此，Java SE的应用场景和部署，配置难度对比起Java EE都简单许多。</p>
-<h1>JVM vs JDK vs JRE</h1>
-<p>从包含的角度来看，可以看成</p>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mi>V</mi><mi>M</mi><mo>⊂</mo><mi>J</mi><mi>R</mi><mi>E</mi><mo>⊂</mo><mi>J</mi><mi>D</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">JVM \subset JRE \sub JDK
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.05764em;">RE</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">DK</span></span></span></span></span></p>
-<p><strong>JVM (Java Virtual Machine)</strong>， 顾名思义，就是Java虚拟机。JVM是实现让Java程序真正做到&quot;Write Once, Run Everywhere&quot;的功臣，其可以针对不同系统，使用相同的字节码和不同的实现方法，以得到相同的结果。</p>
-<p><strong>JRE (Java RunTime Environment)</strong>， 顾名思义，也就是Java运行环境。其中显然包含了虚拟机，也包含了一系列基本的内置类库，用与基本运行Java程序所需的环境和类库。</p>
-<p><strong>JDK (Java Development Kit)</strong>，顾名思义，也就是Java开发工具包，其中包含了JRE和JVM，并能够创建和编译Java程序(javac)。JDK拥有更多额外的工具，比如javadoc（文档生成器）、jdb（调试器）、jconsole（监控工具）、javap（反编译工具）等<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Java Guide: 基础常见面试题总结（上）](https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre)">[2]</span></a></sup>。</p>
-<h1>优化一下Java运行速度吧！</h1>
-<p>Java程序的运行逻辑基本上可以理解为：</p>
-<pre><code class=" mermaid">graph LR
+                <h1>问题描述</h1>
+<p>写技术博客的时候，我们时常会用到mermaid做一些流程图或者时序图什么的，但是Fluid主题中默认使用的mermaid版本总是与我们本地编写的时候使用的mermaid版本不相同（通常Fluid主题中的版本要小许多）。这道值通常会出现mermaid在本地可以渲染出来，但是到了网页上之后却无法渲染。</p>
+<p>同样遇到这个问题的小伙伴，不想看我查出来这个问题的心路历程，可以直接跳到<a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">解决方案</a></p>
+<h1>心路历程</h1>
+<p>我自己用的Typora来编写Markdown，目前来说，Typora使用的mermaid版本为<code>11.9.0</code>。但是，在我编写完后，网页博客中通常会渲染失败，而那上面显示的却是<code>8.14.0</code>。如果懒得去管版本问题的话，倒是也可以将本地写mermaid的方式改成旧版本的方式，但是总是非常麻烦（因为不知道自己错在了哪里）。因此，我翻了一会儿Fluid的代码和网页代码，发现在浏览器中，文章的html文件的后面一部分总是会出现这一段代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs html">  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-title class_">Fluid</span>.<span class="hljs-property">utils</span>.<span class="hljs-title function_">createScript</span>(<span class="hljs-string">&#x27;https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">    mermaid.<span class="hljs-title function_">initialize</span>(&#123;<span class="hljs-string">&quot;theme&quot;</span>:<span class="hljs-string">&quot;default&quot;</span>&#125;);</span><br><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-title class_">Fluid</span>.<span class="hljs-property">utils</span>.<span class="hljs-title function_">listenDOMLoaded</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">      <span class="hljs-title class_">Fluid</span>.<span class="hljs-property">events</span>.<span class="hljs-title function_">registerRefreshCallback</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">if</span> (<span class="hljs-string">&#x27;mermaid&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-variable language_">window</span>) &#123;</span><br><span class="language-javascript">          mermaid.<span class="hljs-title function_">init</span>();</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">      &#125;);</span><br><span class="language-javascript">    &#125;);</span><br><span class="language-javascript">  &#125;);</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>注意到有<code>https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js</code>这么个网址存在。第一反应，这应该是一个什么静态站点的资源库。但是既然有这个<code>Fluid.utils.createScript</code>这么个方法，说明Fluid主题中必然是写了这个代码的。之后，我找到了<code>blog/themes/fluid/source/js/utils.js</code>这个文件，翻了一下，果然有相应的方法定义：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Fluid</span>.<span class="hljs-property">utils</span> = &#123;<br>    <span class="hljs-comment">// 其他代码...</span><br>    <br>    <span class="hljs-attr">createScript</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">url, onload</span>) &#123;<br>        <span class="hljs-keyword">var</span> s = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&#x27;script&#x27;</span>);<br>        s.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;src&#x27;</span>, url);<br>        s.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;type&#x27;</span>, <span class="hljs-string">&#x27;text/javascript&#x27;</span>);<br>        s.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;charset&#x27;</span>, <span class="hljs-string">&#x27;UTF-8&#x27;</span>);<br>        s.<span class="hljs-property">async</span> = <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> onload === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>          <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">window</span>.<span class="hljs-property">attachEvent</span>) &#123;<br>            s.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>              <span class="hljs-keyword">var</span> e = s.<span class="hljs-property">readyState</span>;<br>              <span class="hljs-keyword">if</span> (e === <span class="hljs-string">&#x27;loaded&#x27;</span> || e === <span class="hljs-string">&#x27;complete&#x27;</span>) &#123;<br>                s.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-literal">null</span>;<br>                <span class="hljs-title function_">onload</span>();<br>              &#125;<br>            &#125;;<br>          &#125; <span class="hljs-keyword">else</span> &#123;<br>            s.<span class="hljs-property">onload</span> = onload;<br>          &#125;<br>        &#125;<br>        <span class="hljs-keyword">var</span> ss = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByTagName</span>(<span class="hljs-string">&#x27;script&#x27;</span>);<br>        <span class="hljs-keyword">var</span> e = ss.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span> ? ss[ss.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>] : <span class="hljs-variable language_">document</span>.<span class="hljs-property">head</span> || <span class="hljs-variable language_">document</span>.<span class="hljs-property">documentElement</span>;<br>        e.<span class="hljs-property">parentNode</span>.<span class="hljs-title function_">insertBefore</span>(s, e.<span class="hljs-property">nextSibling</span>);<br>	&#125;,<br>    <br>    <span class="hljs-comment">// 其他代码...</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>好消息是，找到了对应的代码。坏消息是，这似乎是一个动态代码生成方法。不过说来也是，不可能硬编码一套内容出来然后生搬到html生成过程中去，那样太麻烦了。从这段代码中可以注意到有一个<code>url</code>，想必这个<code>url</code>就是对应着生成代码所对应的<code>url=https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js</code>了。那接下来就是找这个网址在哪里定义的。</p>
+<p>漫无目的地找似乎有些没道理，细细想来，这种东西不是很像做Java Spring时弄配置文件的感觉吗？说不定这个东西也是放在了配置文件里面。</p>
+<p>那说到hexo的配置文件，恐怕就只有<code>_config.fluid.yml</code>这个文件了。在里面搜了一下<code>mermaid</code>，里面有关的出现了这些内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs yaml">  <span class="hljs-comment"># 流程图，基于 mermaid-js，具体请见：https://hexo.fluid-dev.com/docs/guide/#mermaid-流程图</span><br>  <span class="hljs-comment"># Flow chart, based on mermaid-js, see: https://hexo.fluid-dev.com/docs/en/guide/#mermaid</span><br>  <span class="hljs-attr">mermaid:</span><br>    <span class="hljs-comment"># 开启后文章默认可用，自定义页面如需使用，需在 Front-matter 中指定 `mermaid: true`</span><br>    <span class="hljs-comment"># If you want to use mermaid on the custom page, you need to set `mermaid: true` in Front-matter</span><br>    <span class="hljs-attr">enable:</span> <span class="hljs-literal">true</span><br><br>    <span class="hljs-comment"># 开启后，只有在文章 Front-matter 里指定 `mermaid: true` 才会在文章页启动公式转换，以便在页面不包含公式时提高加载速度</span><br>    <span class="hljs-comment"># If true, only set `mermaid: true` in Front-matter will enable mermaid, to load faster when the page does not contain mermaid</span><br>    <span class="hljs-attr">specific:</span> <span class="hljs-literal">true</span><br><br>    <span class="hljs-comment"># See: http://mermaid-js.github.io/mermaid/</span><br>    <span class="hljs-attr">options:</span> &#123; <span class="hljs-attr">theme:</span> <span class="hljs-string">&#x27;default&#x27;</span> &#125;<br>    <br><span class="hljs-comment"># --------------</span><br><span class="hljs-attr">static_prefix:</span><br>	<span class="hljs-attr">mermaid:</span> <span class="hljs-string">https://lib.baomitu.com/mermaid/8.14.0/</span><br></code></pre></td></tr></table></figure>
+<p>看到这里应该很明了，下面那个就是一个静态地址的定义，想必我们把里面的<code>8.14.0</code>改成想要的版本，应该就好了。</p>
+<p>因此我试着改了一下，果然就好了。</p>
+<p>在改好了之后再去回顾Fluid文档中告诉我们的静态配置，这才理解原来（有一部分？）是用在了这里。</p>
+<h1>解决方案</h1>
+<p>去<code>_config.fluid.yml</code>中，拉倒最底下，找到<code>mermaid: https://lib.baomitu.com/mermaid/8.14.0/</code>，把其中的<code>8.14.0</code>改成<code>11.9.0</code>即可。</p>
+<p>其他版本的我没有测试，但是亲测<code>11.9.0</code>是可用的！</p>
 
-c1[编写.java文件] --javac编译--&gt; c2[生成.class 字节码文件]
-c2 --JVM解释器&amp;JIT--&gt; c3[机器码]
-c3 --&gt; 运行程序
-</code></pre>
-<p>在将.class文件转化为机器码的过程中，JVM类加载器首先会加载.class文件,然后通过解释器逐行解释执行。可以看出，这样子会比较慢。由于有些代码块会经常被调用，因此，不难想到可以将这些经常被用到的代码块的机器码保存下来，以节省大量的时间，这看起来就像是一种缓存的机制。</p>
-<p>综上，Java引进了名为**JIT (Just In Time Compilation)**的编译器，使其在程序运行时进行动态的编译。其核心逻辑是，对于热点代码块，JIT会在完成第一次编译后将对应的机器码保存下来，以供下次直接使用。这时候我想到了一个问题：<strong>对于一个庞大的系统来说，JIT所带来的缓存量也会很大，也许会对内存带来很大的压力。我们应该如何处理这个问题？</strong></p>
-<h2 id="JVM如何管理JIT缓存的内存-sup-id-fnref-1-class-footnote-ref-a-href-fn-1-rel-footnote-span-class-hint-top-hint-rounded-aria-label-来自于GPT老师-1-span-a-sup">JVM如何管理JIT缓存的内存<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="来自于GPT老师">[1]</span></a></sup></h2>
-<p>JVM 使用以下机制来管理 JIT 编译生成的本地代码及其缓存：</p>
-<ol>
-<li><strong>代码缓存区（Code Cache）：</strong>
-<ul>
-<li>JVM 在内存中分配一个固定大小的区域，用于存储 JIT 编译后的本地机器码。</li>
-<li>代码缓存有容量限制，当缓存满时，JVM 会自动清理较老或较少使用的编译代码，以腾出空间给新的热点代码。</li>
-</ul>
-</li>
-<li><strong>分层编译（Tiered Compilation）：</strong>
-<ul>
-<li>JVM 会分阶段优化代码，减少不必要的内存占用。
-<ul>
-<li>初始阶段：使用 C1 编译器快速生成基本的本地代码，占用内存少但优化程度较低。</li>
-<li>热点阶段：使用 C2 编译器对高频代码进行深度优化，占用更多内存，但执行效率更高。</li>
-</ul>
-</li>
-<li>如果代码热点不再频繁使用，JVM 可能会将其标记为可清理对象。</li>
-</ul>
-</li>
-<li><strong>垃圾回收（GC）与代码缓存清理：</strong>
-<ul>
-<li>JVM 的垃圾回收机制不仅负责清理堆内存，还可以清理代码缓存中的无用代码。</li>
-<li>无效或不再使用的 JIT 编译代码会被标记并清理，以释放内存。</li>
-</ul>
-</li>
-</ol>
-<p>对于代码缓存，JVM提供了一些参数用来调整缓存区域的大小，或者是将代码块识别为热点代码所需的阈值:</p>
-<ul>
-<li><code>-XX:InitialCodeCacheSize</code>: 代码缓存的初始大小</li>
-<li><code>-XX:ReservedCodeCacheSize</code>: 代码缓存的最大大小</li>
-<li><code>-XX:CompileThreshold</code>: 将代码识别为热点代码所需的调用次数阈值</li>
-</ul>
-<h2 id="Java包装类的缓存">Java包装类的缓存</h2>
-<p><strong>包装类</strong>是对Java中基本类型的封装。一般来说，包装类的创建<code>.valueOf(...)</code>会占用内存，而对于一些常用的、小范围的数值（例如 0 到 127 的 <code>Integer</code>），频繁创建和销毁对象会导致较大的内存浪费。因此，在JDK5中引入了一个缓存机制，其会在类初始化时，提前创建好会被频繁使用的包装类对象。这种机制常见于 <code>Integer</code>、<code>Byte</code>、<code>Short</code>、<code>Long</code> 和 <code>Character</code> 等包装类，目的是为了优化内存的使用并提高性能。</p>
-<p><strong>注意：在构造函数中，不会使用缓存机制，比如：</strong><code>Integer a = new Integer(100);</code></p>
-<p><strong>自动装箱的过程会使用缓存，因为其底层代码是调用了封装类的</strong><code>valueOf()</code><strong>这个方法</strong>。</p>
-<h1>参考资料</h1>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span>来自于GPT老师
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#jvm-vs-jdk-vs-jre">Java Guide: 基础常见面试题总结（上）</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
                 
               </div>
             
@@ -389,7 +343,7 @@ c3 --&gt; 运行程序
     
       <span class="category-chain">
         
-  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" class="category-chain-item">Java基础</a>
+  <a href="/categories/%E5%85%B6%E4%BB%96/" class="category-chain-item">其他</a>
   
   
 
@@ -404,13 +358,9 @@ c3 --&gt; 运行程序
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Java/" class="print-no-link">#Java</a>
+        <a href="/tags/Hexo/" class="print-no-link">#Hexo</a>
       
-        <a href="/tags/JVM/" class="print-no-link">#JVM</a>
-      
-        <a href="/tags/JDK/" class="print-no-link">#JDK</a>
-      
-        <a href="/tags/JRE/" class="print-no-link">#JRE</a>
+        <a href="/tags/Fluid%E4%B8%BB%E9%A2%98/" class="print-no-link">#Fluid主题</a>
       
     </div>
   
@@ -422,8 +372,8 @@ c3 --&gt; 运行程序
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java学习 - JVM, JDK, JRE</div>
-      <div>http://example.com/2024/11/24/Java学习/Java学习 - JVM, JDK, JRE/</div>
+      <div>Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题</div>
+      <div>http://example.com/2025/08/29/Fluid主题下，网页渲染的mermaid版本与本地使用的Typora版本不相同的解决方案/</div>
     </div>
     <div class="license-meta">
       
@@ -435,7 +385,7 @@ c3 --&gt; 运行程序
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月24日</div>
+          <div>2025年8月29日</div>
         </div>
       
       
@@ -467,15 +417,21 @@ c3 --&gt; 运行程序
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/26/Java%E5%AD%A6%E4%B9%A0/Java%E5%AD%A6%E4%B9%A0%20-%20%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java学习 - 面向对象">
+                      <a href="/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%20Sentinel/" title="《Redis设计与实现》 哨兵机制 Sentinel">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java学习 - 面向对象</span>
+                        <span class="hidden-mobile">《Redis设计与实现》 哨兵机制 Sentinel</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/" title="《Redis设计与实现》主从复制">
+                        <span class="hidden-mobile">《Redis设计与实现》主从复制</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
@@ -530,26 +486,6 @@ c3 --&gt; 运行程序
 
   
 
-
-  
-  
-
-
-
-
-  <script>
-  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/11.9.0/mermaid.min.js', function() {
-    mermaid.initialize({"theme":"default"});
-
-    Fluid.utils.listenDOMLoaded(function() {
-      Fluid.events.registerRefreshCallback(function() {
-        if ('mermaid' in window) {
-          mermaid.init();
-        }
-      });
-    });
-  });
-</script>
 
 
 
