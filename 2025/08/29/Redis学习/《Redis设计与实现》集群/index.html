@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Clain Chen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Reds集群是Redis提供的分布式数据库方案，集群通过分片(sharing)来进行数据共享，并提供复制和故障转移功能。            节点 一个Redis集群通常有多个节点(node，也就是一个Redis服务器)组成，他们最开始时都是相互独立的，需要通过连接来构成一个包含多个节点的集群。连接节点的命令为： 1CLUSTER MEET &lt;ip&gt; &amp;lt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Redis设计与实现》 集群">
+<meta property="og:url" content="http://example.com/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E9%9B%86%E7%BE%A4/index.html">
+<meta property="og:site_name" content="Clain的小屋">
+<meta property="og:description" content="Reds集群是Redis提供的分布式数据库方案，集群通过分片(sharing)来进行数据共享，并提供复制和故障转移功能。            节点 一个Redis集群通常有多个节点(node，也就是一个Redis服务器)组成，他们最开始时都是相互独立的，需要通过连接来构成一个包含多个节点的集群。连接节点的命令为： 1CLUSTER MEET &lt;ip&gt; &amp;lt">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-29T11:08:05.000Z">
+<meta property="article:modified_time" content="2025-08-30T08:59:00.219Z">
+<meta property="article:author" content="Clain Chen">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>《Redis设计与实现》 集群 - Clain的小屋</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"anchorLink":true,"anchorLinkSymbol":"#","achorLinkSpace":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":"t3vsB0RJPFqMe4fqq2PAxW9H-gzGzoHsz","app_key":"v4VvZEUKcd2wDBNYO4A3ntni","server_url":"https://t3vsb0rj.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Clain的小屋</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《Redis设计与实现》 集群"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-29 21:08" pubdate>
+          2025年8月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《Redis设计与实现》 集群</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2025年8月30日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <div class="note note-info">
+            <p>Reds集群是Redis提供的分布式数据库方案，集群通过分片(sharing)来进行数据共享，并提供复制和故障转移功能。</p>
+          </div>
+<h1>节点</h1>
+<p>一个Redis集群通常有多个节点(node，也就是一个Redis服务器)组成，他们最开始时都是相互独立的，需要通过连接来构成一个包含多个节点的集群。连接节点的命令为：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmd">CLUSTER MEET &lt;ip&gt; &lt;port&gt;<br></code></pre></td></tr></table></figure>
+<p>该命令发送给一个节点之后，该节点就会与目标<code>ip:port</code>节点进行握手。握手成功后，该节点便会将目标节点添加当该节点所在的集群中。</p>
+<p>节点（集群模式下的Redis服务器）会继续使用所有在单机模式中使用的服务器组件，但也有些不同：</p>
+<ul>
+<li>在时间事件处理器执行的<code>serverCron</code>函数中，会调用集群特有的<code>clusterCron</code>函数。该函数用于执行在集群模式下所需要的常规操作，比如向节点发送消息，检查其他节点的状态，和检查是否需要自动进行故障转移等。</li>
+<li>节点的底层代码中会多一些关于集群模式下的特有结构：
+<ul>
+<li><code>cluster.h/clusterNode</code>：保存了节点当前状态，如创建时间，名字，当前的配置纪元，IP地址，端口等等</li>
+<li><code>cluster.h/clusterLink</code>：在<code>clusterNode</code>的<code>link</code>属性下，保存了连接节点所需的有关信息，如套接字描述符，输入缓冲区和输出缓冲区</li>
+<li><code>cluster.h/clusterState</code>： <strong>每一个节点都有一个这个结构</strong>。记录了在当前节点的视角下，集群目前所处的状态，如集群在线状态，集群中有多少个节点，集群当前的配置纪元等</li>
+</ul>
+</li>
+</ul>
+<p>这些结构的底层代码大致长这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">clusterNode</span> &#123;</span><br><br>    <span class="hljs-comment">// 创建节点的时间</span><br>    <span class="hljs-type">mstime_t</span> ctime;<br><br>    <span class="hljs-comment">// 节点的名字，由 40 个十六进制字符组成</span><br>    <span class="hljs-comment">// 例如 68eef66df23420a5862208ef5b1a7005b806f2ff</span><br>    <span class="hljs-type">char</span> name[REDIS_CLUSTER_NAMELEN];<br><br>    <span class="hljs-comment">// 节点标识</span><br>    <span class="hljs-comment">// 使用各种不同的标识值记录节点的角色（比如主节点或者从节点）</span><br>    <span class="hljs-comment">// REDIS_NODE_MASTER | REDIS_NODE_SLAVE</span><br>    <span class="hljs-comment">// 以及节点目前所处的状态（比如在线或者下线）。</span><br>    <span class="hljs-type">int</span> flags;<br><br>    <span class="hljs-comment">// 节点当前的配置纪元，用于实现故障转移</span><br>    <span class="hljs-type">uint64_t</span> configEpoch;<br><br>    <span class="hljs-comment">// 节点的 IP 地址</span><br>    <span class="hljs-type">char</span> ip[REDIS_IP_STR_LEN];<br><br>    <span class="hljs-comment">// 节点的端口号</span><br>    <span class="hljs-type">int</span> port;<br><br>    <span class="hljs-comment">// 保存连接节点所需的有关信息</span><br>    clusterLink *link;<br>	<br>    <span class="hljs-comment">// 一个二进制位数组，长度为2048个字节(186384/8 = 2048)，共包含16384个二进制位</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> slots[<span class="hljs-number">16384</span>/<span class="hljs-number">8</span>];<br>    <br>    <span class="hljs-comment">// 该节点负责处理的槽的数量，也就是slots数组中值为1的二进制位数量</span><br>    <span class="hljs-type">int</span> numslots;<br>    <br>    <span class="hljs-comment">// 如果这是一个从节点，那么该属性将指向主节点</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">clusterNode</span> *<span class="hljs-title">slaveof</span>;</span><br>    <span class="hljs-comment">// ...</span><br><br>&#125;;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">clusterLink</span> &#123;</span><br><br>    <span class="hljs-comment">// 连接的创建时间</span><br>    <span class="hljs-type">mstime_t</span> ctime;<br><br>    <span class="hljs-comment">// TCP 套接字描述符</span><br>    <span class="hljs-type">int</span> fd;<br><br>    <span class="hljs-comment">// 输出缓冲区，保存着等待发送给其他节点的消息（message）。</span><br>    sds sndbuf;<br><br>    <span class="hljs-comment">// 输入缓冲区，保存着从其他节点接收到的消息。</span><br>    sds rcvbuf;<br><br>    <span class="hljs-comment">// 与这个连接相关联的节点，如果没有的话就为 NULL</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">clusterNode</span> *<span class="hljs-title">node</span>;</span><br><br>&#125; clusterLink;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">clusterState</span> &#123;</span><br><br>    <span class="hljs-comment">// 指向当前节点的指针</span><br>    clusterNode *myself;<br><br>    <span class="hljs-comment">// 集群当前的配置纪元，用于实现故障转移</span><br>    <span class="hljs-type">uint64_t</span> currentEpoch;<br><br>    <span class="hljs-comment">// 集群当前的状态：是在线还是下线</span><br>    <span class="hljs-type">int</span> state;<br><br>    <span class="hljs-comment">// 集群中至少处理着一个槽的节点的数量</span><br>    <span class="hljs-type">int</span> size;<br><br>    <span class="hljs-comment">// 集群节点名单（包括 myself 节点）</span><br>    <span class="hljs-comment">// 字典的键为节点的名字，字典的值为节点对应的 clusterNode 结构</span><br>    dict *nodes;<br>    <br>    <span class="hljs-comment">// 指向自己或其他节点的指针数组，表示某个节点负责哪个槽</span><br>    clusterNode *slots[<span class="hljs-number">16384</span>];<br><br>    <span class="hljs-comment">// 槽与键之间的关系，该关系构成了一个有序跳表</span><br>    zkiplist *slots_to_keys;<br>    <span class="hljs-comment">// ...</span><br><br>&#125; clusterState;<br></code></pre></td></tr></table></figure>
+<h2 id="CLUSTER-MEET命令">CLUSTER MEET命令</h2>
+<p>这里简单画一个图，用来讲述从客户发送<code>CLUSTER MEET</code>命令开始一直到握手完成的流程：</p>
+<pre><code class=" mermaid">sequenceDiagram
+	autonumber
+	participant Client as 客户端
+	participant NodeA as 节点A
+	participant NodeB as 节点B
+	Client -&gt;&gt; NodeA: CLUSTER MEET &lt;B_ip&gt; &lt;B_port&gt;
+	NodeA -&gt;&gt; NodeA: 创建一个关于节点B的clusterNode结构&lt;br/&gt;将其添加到clusterState.node字典中
+	NodeA -&gt;&gt; NodeB: MEET
+	NodeB -&gt;&gt; NodeB: 创建一个关于节点A的clusterNode结构&lt;br/&gt;将其添加到clusterState.node字典中
+	NodeB -&gt;&gt; NodeA: PONG
+	NodeA -&gt;&gt; NodeB: PING
+	Note over NodeA,NodeB: 握手完成
+</code></pre>
+<p>在节点A与B握手完成之后，节点A会将节点B的信息通过Gossip<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="[Gossip协议详解](https://javaguide.cn/distributed-system/protocol/gossip-protocl.html)">[1]</span></a></sup>协议传播给集群中的其他节点，以让其他节点也与节点B握手。这样，做种就可以形成一个完全连接的节点网以构成集群。</p>
+<h1>槽指派 (Assign)</h1>
+<p>Redis集群的主要目的就是为了实现分布式数据库，而做分布式数据库最常见的就是通过分片的方式，Redis集群也就是这么做的：集群的整个数据库被分为<code>16384</code>个槽，<strong>数据库中的每个键都属于这些槽的其中一个</strong>，集群中的每个节点可以处理<code>0-16384</code>个槽。</p>
+<p>当数据库中的<code>16384</code>个槽都有节点在处理时，集群处于上线状态(ok)，反之，如果任意一个槽没有得到处理，则为下线状态(fail)。</p>
+<p>用户可以通过向节点发送<code>CLUSTER ADDSLOTS &lt;slot&gt; [slot ...]</code>命令，将一个或多个槽指派给节点负责。</p>
+<p><code>clusterNode</code>结构中的<code>slots</code>属性和<code>numslot</code>属性记录了节点负责处理哪些槽：</p>
+<ul>
+<li><code>slots</code>：一个16384个二进制位的二进制数组(长度为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>16384</mn><mi mathvariant="normal">/</mi><mn>8</mn><mo>=</mo><mn>2048</mn></mrow><annotation encoding="application/x-tex">16384/8=2048</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">16384/8</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2048</span></span></span></span>)，如果索引<code>i</code>上的二进制位的值为<code>1</code>，则表示该节点负责处理槽<code>i</code>，反之就不处理。</li>
+<li><code>numslots</code>：记录节点负责处理的槽的数量</li>
+</ul>
+<p>节点在将自己负责处理的槽记录下来之后，会将自己的<code>slots</code>数组通过消息发送给其他节点，然后其他节点将更新自己在<code>clusterState</code>结构下的<code>slots</code>属性：</p>
+<ul>
+<li><code>clusterState.slots</code>：这是一个具有16384个指针的数组，每一个指针都指向一个<code>clusterNode</code>结构或<code>NULL</code>。指向的<code>clusterNode</code>结构代表槽<code>i</code>已经指派给了<code>clusterNode</code>结构所代表的节点</li>
+</ul>
+<p><code>clusterNode</code>和<code>clusterState</code>中都有关于<code>slots</code>的信息是出于一个性能方面的考量。如果没有前者的存在，那每一次发送指派信息时，都需要遍历一次后者的<code>slots</code>，这样会低效许多。</p>
+<p>在客户端向服务器发送<code>CLUSTER ADDSLOTS</code>之后，服务器会检查是否指定的所有槽都没有被指派给任意节点，如果发现了这种情况，则将返回错误，并终止命令。</p>
+<h1>集群的命令执行</h1>
+<p>在集群进入上线状态后，客户端才能向集群中的节点发送数据命令。<strong>当客户端发送与数据库键有关的命令时</strong>，接受命令的节点会计算出命令要处理的数据库建属于哪个槽，并检查该槽是否指派给了自己：</p>
+<ul>
+<li>如果该槽是指派给了自己，那就正常执行并返回命令</li>
+<li>如果该槽没有指派给自己，节点奖项客户端返回一个<code>MOVED</code>错误，指引客户端重定向到正确的节点，并再次发送之前想要执行的命令。</li>
+</ul>
+<p><strong>集群计算键属于哪一个槽的方法为（这里用python写了）：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">slot_number</span>(<span class="hljs-params">key</span>):<br>	<span class="hljs-keyword">return</span> CRC16(key) &amp; <span class="hljs-number">16384</span><br></code></pre></td></tr></table></figure>
+<p>很明显了，先用CRC-16计算key的校验和，然后用<code>&amp; 16384</code>计算出一个介于0到16384之间的槽号。</p>
+<h2 id="MOVED错误">MOVED错误</h2>
+<p>当节点发现命令键不在自己负责的槽中，将会返回给客户端一个<code>MOVE</code>错误，具体格式为：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tex">MOVED &lt;slot&gt; &lt;ip&gt;:&lt;port&gt;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>slot</code>：命令键所在的槽</li>
+<li><code>ip:port</code>：负责处理槽的节点的IP与端口号</li>
+</ul>
+<p>然而，在我们实际操作的时候，我们有时候不会看到<code>MOVED</code>错误信息，而是会看到重定向的信息。下面给一个例子：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cmd"># 假如该集群中有<span class="hljs-number">7000</span>,<span class="hljs-number">7001</span>,<span class="hljs-number">7002</span>三个端口号的节点，他们的IP地址都是<span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span><br>$ redis-cli -c -p <span class="hljs-number">7000</span> # 集群模式<br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>：<span class="hljs-number">7000</span>&gt; <span class="hljs-built_in">SET</span> msg &quot;message&quot;<br>-&gt; Redirected to slot [<span class="hljs-number">6257</span>] located <span class="hljs-built_in">at</span> <span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7001</span><br>OK<br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7001</span>&gt;<br><br>#========下面是另一个情况=========#<br>$ redis-cli -p <span class="hljs-number">7000</span> # 单机模式<br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7000</span>&gt; <span class="hljs-built_in">SET</span> msg &quot;message&quot;<br>(error) MOVED <span class="hljs-number">6257</span> <span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7001</span><br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7000</span>&gt;<br></code></pre></td></tr></table></figure>
+<p>这个例子中可以清晰地看到，当客户端使用集群模式，便会自动进行节点转向，并答应出转向信息。而在单机模式下，<code>MOVED</code>错误会被打印出来。</p>
+<p><strong>从这里也可以明显地看出来，在集群模式下的服务器，如果有任意一个槽位没有得到分配，集群都应该是被关闭的。</strong></p>
+<h2 id="节点数据库">节点数据库</h2>
+<p>我们在之前文章中讲过，单机服务器中可以有很多个数据库。在节点（集群模式下的服务器）中，只能使用0号数据库。而其余的大部分机制，都与单机数据库相同。不同的是，在节点中有一个<code>clusterState.slots_to_keys</code>属性。这是一个跳表，每一个跳表节点的分值都是一个槽号，节点成员是数据库键。在对节点数据库进行写操作时，会有如下情况：</p>
+<ul>
+<li>添加新键值：节点会将这个件以及键的槽号关联到<code>slots_to_keys</code>跳表</li>
+<li>删除键：节点会在<code>slots_to_keys</code>跳表中删除这个键与槽号的关系</li>
+</ul>
+<p>通过这个跳表，节点可以很方便地对属于某个或某些槽的所有数据库键进行批量操作。</p>
+<h1>重新分片</h1>
+<p>Redis集群的重新分片操作，旨在将某个或某批已经分配的槽重新分配给另一个节点，并且相关槽内的数据都会被转移到目标节点。</p>
+<p>重分片操作是由Redis的集群管理软件<code>redis-trib</code>负责执行的，具体流程如下：</p>
+<pre><code class=" mermaid">sequenceDiagram
+	autonumber
+	participant rt as redis-trib
+	participant target as 目标节点
+	participant source as 源节点
+	rt -&gt;&gt; target: CLUSTER SETSLOT &lt;slot&gt; IMPORTING &lt;source_id&gt;
+	target -&gt;&gt; target: 将clusterState.importing_slots_from[i]&lt;br/&gt;的值设置为source_id所代表节点的clusterNode结构
+	rt -&gt;&gt; source: CLUSTER SETSLOT &lt;slot&gt; MIGRATING &lt;target_id&gt;
+	source -&gt;&gt; source: 将clusterState.migrating_slots_to[i]&lt;br/&gt;的值设置为target_id所代表节点的clusterNode结构
+	loop 源节点没有迁移完在槽slot中的键值对
+	rt -&gt;&gt; source: CLUSTER GETKEYSINSLOT &lt;slot&gt; &lt;count&gt;
+	source -&gt;&gt; rt: 发送count个属于槽slot的键值对的键名
+	loop 对获得的每个键名key_name
+	rt -&gt;&gt; source: MIGRATE &lt;target_ip&gt; &lt;target_port&gt; &lt;key_name&gt; 0 &lt;timeout&gt;
+	source -&gt;&gt; target: 发送指定key_name的键值
+	target -&gt;&gt; target: 接受键值，将其存入数据库
+	target -&gt;&gt; source: OK
+	source -&gt;&gt; source: 删除本地数据库中key_name的键值
+	source -&gt;&gt; rt: OK
+	end
+	end
+	target -&gt;&gt; target: 完成分配槽slot
+</code></pre>
+<ul>
+<li>如果涉及到多个槽，则<code>redis-trib</code>将对每个给定的槽分别执行以上步骤</li>
+<li>1-4步中，我少写了一些返回信息的过程，但是这并不是很重要。</li>
+<li>7-12步中，我添加了一些书中没有直接讲到的内容（消息返回与源节点删除键值对，<code>redis-trib</code>发送<code>MIGRATE</code>的时机）</li>
+</ul>
+<h2 id="ASK错误">ASK错误</h2>
+<p>在执行重新分片的期间（上面时序图的5-12期间），客户端向源节点发送了一个与数据库键有关的命令，且该键在正在迁移的槽中时：</p>
+<ul>
+<li>源节点查找指定键，找到了就执行客户端发送的命令</li>
+<li>没找到的话，取决于这个键是否正在迁移槽中：
+<ul>
+<li>没有，则用正常流程处理信息（返回信息不存在错误什么的）</li>
+<li>有，则返回<code>ASK</code>错误，并指引客户端转向正在导入槽的目标节点</li>
+</ul>
+</li>
+</ul>
+<h3 id="ASKING命令">ASKING命令</h3>
+<p>该命令唯一要做的就是打开发送改名的客户端的<code>REDIS_ASKING</code>标识。然而，该表示只会生效一次，生效之后会自动关闭。具体功能如下：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cmd"><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7000</span>&gt; ASKING # 打开REDIS_ASKING标识<br>OK<br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7000</span>&gt; GET &quot;love&quot; # 移除REDIS_ASKING标识<br>&quot;you get the key &#x27;love&#x27;&quot;<br><br><span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7000</span>&gt; GET &quot;love&quot; # REDIS_ASKING标识未打开，执行失败<br>(error) <span class="hljs-built_in">MOVE</span> <span class="hljs-number">16198</span> <span class="hljs-number">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>:<span class="hljs-number">7002</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>该标识的作用是会让Redis服务器强制执行这个关于槽<code>i</code>的命令一次，即便这个槽<code>i</code>没有被指派给这个节点。</li>
+</ul>
+<h1>复制与故障转移</h1>
+<p>Redis集群中的节点也被分为主节点和从节点。概念与主从服务器一样，主节点用于处理槽，从服务器用于复制主节点。一样的，当被复制的主节点下线时，从节点需要代替下线的主节点继续处理命令请求。<br>
+在向一个节点发送命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmd">CLUSTER REPLICATE &lt;node_id&gt;<br></code></pre></td></tr></table></figure>
+<p>可以让接收命令的节点成为<code>node_id</code>所指定节点的从节点。节点接收到这个命令后:</p>
+<ul>
+<li>将自己的<code>clusterState.myself.slaveof</code>指针指向这个结构</li>
+<li>将自己的<code>clusterState.myself.flags</code>中的属性，关闭<code>REDIS_NODE_MASTER</code>并打开<code>REDIS_NODE_SLAVE</code></li>
+<li>根据<code>clusterState.myself.slaveof</code>中的信息，复制主节点。
+<ul>
+<li>复制主节点的逻辑与Redis单机服务器中的复制功能相同（参考<a href="">《Redis设计与实现》哨兵机制 Sentinel</a>）</li>
+</ul>
+</li>
+</ul>
+<p>在成为从节点后且开始复制某个主节点时，该节点会将消息发送给集群中的其他节点，因此集群中所有节点都会知道某个从节点正在复制某个主节点。</p>
+<p>在Redis集群中，观测一个节点是否下线，和选举出新主节点的方式都与Redis哨兵中的机制很像。接下来会描述一些细节上的不同</p>
+<h2 id="故障检测">故障检测</h2>
+<p>集群中的每个节点都会定期地向集群中的其他节点发送<code>PING</code>消息，以此来检测对方是否在线。如果接受<code>PING</code>消息的节点没有在规定的时间内给发送<code>PING</code>消息的节点返回<code>PONG</code>消息，则发送<code>PING</code>消息的节点就会将目标节点标记为疑似下线(probable fail, PFAIL)。</p>
+<p>集群中的各个节点互相发送的消息中也会包含在它的视角中各个节点的状态信息：在线状态，疑似下线状态(PFAIL)，还是已下线状态(FAIL)。</p>
+<p>如果在一个集群中，半数以上的<strong>负责处理槽的主节点</strong>都将某个主节点<code>x</code>报告为疑似下线，那么这个主节点<code>x</code>将被标记为已下线(FAIL)。观察到这一现象的节点会向集群广播一条关于主节点<code>x</code>的FAIL消息，并且所有收到消息的节点都会这个主节点<code>x</code>标记为已下线。</p>
+<h2 id="选举-故障转移">选举 -&gt; 故障转移</h2>
+<p>选举中与哨兵机制不一样的地方：</p>
+<ul>
+<li>只有集群中的主节点有投票机会，只有下线的主节点<code>x</code>的从节点才会向广播<code>CLUSTERMSG_TYPE_FAILOVER_AUTH_REQUEST</code>消息，要求所有收到消息且有投票权的主节点向这个从节点投票</li>
+<li>当有一个从节点收集到半数以上的可投票的主节点的支持票时，这个从节点就会被当成新的主节点</li>
+</ul>
+<p>故障转移中与哨兵机制不一样的地方：</p>
+<ul>
+<li>新的主节点会撤销所有对已下线主节点的槽指派，并将这些槽全部指派给自己</li>
+<li>显得主节点会在指派完成之后，像集群广播一条<code>PONG</code>消息，让其他节点知道这个节点已经变成了主节点，并更新他们自己的结构。</li>
+</ul>
+<h1>消息</h1>
+<p>集群中的各个节点通过发送与接收消息来进行通信。主要发送的消息有以下五种：</p>
+<ul>
+<li><code>MEET</code>消息：用于请求加入发送者当前所属集群中</li>
+<li><code>PING</code>消息：集群里的每个节点默认每隔一秒钟就会从已知节点列表中随机选出五个节点，然后对这五个节点中最长时间没有发送过<code>PING</code>消息的节点发送<code>PING</code>消息：以此来检测被选中的节点是否在线。除此之外，如果节点A最后一次收到节点B发送的<code>PONG</code>消息的时间，距离当前时间已经超过了节点A的<code>cluster-node-timeout</code>选项设置时长的一半，那么节点A也会向节点B发送<code>PING</code>消息，这可以防止节点A因为长时间没有随机选中节点B作为PING消息的发送对象而导致对节点B的信息更新滞后。</li>
+<li><code>PONG</code>消息：当接收者收到发送者发来的<code>MEET</code>消息或者<code>PING</code>消息时，为了向发送者确认这条<code>MEET</code>消息或者PING<code>消息</code>已到达，接收者会向发送者返回一条<code>PONG</code>消息。另外，一个节点也可以通过向集群广播自己的<code>PONG</code>消息来让集群中的其他节点立即刷新关于这个节点的认识。</li>
+<li><code>FAIL</code>消息：当一个主节点A判断另一个主节点B已经进入<code>FAIL</code>状态时，节点A会向集群广播一条关于节点B的<code>FAIL</code>消息，所有收到这条消息的节点都会立即将节点B标记为已下线。</li>
+<li><code>PUBLISH</code>消息：当节点接收到一个<code>PUBLISH</code>命令时，节点会执行这个命令，并向集群广播一条<code>PUBLISH</code>消息，所有接收到这条<code>PUBLISH</code>消息的节点都会执行相同的<code>PUBLISH</code>命令。</li>
+</ul>
+<p>Redis集群中的各个节点通过Gossip协议来交换各自关于不同节点的状态信息。</p>
+<p>原书详细介绍了每一个消息的具体内容，这里不做详细赘述，有兴趣的可以去原著看看。</p>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/protocol/gossip-protocl.html">Gossip协议详解</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Redis%E5%AD%A6%E4%B9%A0/" class="category-chain-item">Redis学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/" class="print-no-link">#Redis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《Redis设计与实现》 集群</div>
+      <div>http://example.com/2025/08/29/Redis学习/《Redis设计与实现》集群/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Clain Chen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/29/Redis%E5%AD%A6%E4%B9%A0/%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%20Sentinel/" title="《Redis设计与实现》 哨兵机制 Sentinel">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《Redis设计与实现》 哨兵机制 Sentinel</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/29/Fluid%E4%B8%BB%E9%A2%98%E4%B8%8B%EF%BC%8C%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93%E7%9A%84mermaid%E7%89%88%E6%9C%AC%E4%B8%8E%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8%E7%9A%84Typora%E7%89%88%E6%9C%AC%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题">
+                        <span class="hidden-mobile">Fluid主题下，如何解决网页渲染的mermaid版本与本地使用的版本不相同的问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/11.9.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+
+    // 最佳方案：找到对应的标题元素并获取其真实ID
+    setTimeout(function() {
+      jQuery('#toc-body a[href="#"]').each(function() {
+        var $link = jQuery(this);
+        var linkText = $link.text().trim();
+        
+        // 找到文本内容匹配的标题元素
+        var $matchingHeader = jQuery('.markdown-body h1').filter(function() {
+          return jQuery(this).text().trim() === linkText;
+        }).first();
+        
+        if ($matchingHeader.length > 0) {
+          var headerId = $matchingHeader.attr('id');
+          headerID = headerId.trim().toLowerCase().replace(/[s]+/g, '-');
+          if (headerId) {
+            $link.attr('href', '#' + headerId);
+          }
+        }
+      });
+    }, 300); // 给tocbot更多时间完成渲染
+
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
